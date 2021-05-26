@@ -1,0 +1,14 @@
+name: 'ansible'
+description: 'runs an ansible playbook'
+
+inputs:
+  playbook:
+    required: true
+    default: main.yml
+
+runs:
+  using: docker
+  image: Dockerfile
+  args:
+    - ${{ inputs.playbook }}
+    - ${{ inputs.inventory }}

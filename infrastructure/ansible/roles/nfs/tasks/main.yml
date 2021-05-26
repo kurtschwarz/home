@@ -1,0 +1,19 @@
+---
+
+- name: include os-specific variables
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
+- name: install nfs packages
+  include: "setup-{{ ansible_os_family | lower }}.yml"
+
+- name: ensure nfs directories are present
+  file:
+    path: "{{ item.strip().split()[0] }}"
+    state: directory
+  with_items: "{{ nfs__exports }}"
+
+- name: ensure nfs services are enabled and running
+  service:
+    name: "{{ nfs__service_name }}"
+    state: started
+    enabled: true

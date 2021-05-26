@@ -1,0 +1,8 @@
+---
+
+- name: ensure nfs packages are present
+  apt:
+    name:
+      - nfs-common
+      - nfs-kernel-server
+    state: present
