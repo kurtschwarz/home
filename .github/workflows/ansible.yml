@@ -3,14 +3,26 @@ name: ansible
 on:
   push:
     branches:
-    - master
+    # - master
     - ansible
 
 jobs:
-  build:
+
+  lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: ./.github/actions/ansible
       with:
-        playbook: infrastructure/ansible/main.yml
+        args: ansible-lint -p infrastructure/ansible/main.yml
+
+  # apply:
+  #   runs-on: ubuntu-latest
+  #   needs: lint
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: ./.github/actions/ansible
+  #     with:
+  #       args: ansible-playbook --check infrastructure/ansible/main.yml
+  #       # playbook: infrastructure/ansible/main.yml
+  #       # ssh-key: ${{secrets.BASTION_SSH_KEY}}

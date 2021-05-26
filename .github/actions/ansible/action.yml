@@ -3,12 +3,14 @@ description: 'runs an ansible playbook'
 
 inputs:
   playbook:
-    required: true
     default: main.yml
+    required: true
+  verbose:
+    default: 0
+    required: false
+  ssh-key:
+    required: true
 
 runs:
   using: docker
   image: Dockerfile
-  args:
-    - ${{ inputs.playbook }}
-    - ${{ inputs.inventory }}

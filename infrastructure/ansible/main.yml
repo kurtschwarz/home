@@ -1,1 +1,6 @@
 ---
+
+- hosts: all
+  roles:
+  - nfs
+  become: true
