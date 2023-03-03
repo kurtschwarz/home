@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  telegraf:
+    image: 192.168.86.8:5000/services/telegraf:1.25.3
+    build: ./services/telegraf
+    volumes:
+      - /:/hostfs:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - HOST_ETC=/hostfs/etc
+      - HOST_PROC=/hostfs/proc
+      - HOST_SYS=/hostfs/sys
+      - HOST_VAR=/hostfs/var
+      - HOST_RUN=/hostfs/run
+      - HOST_MOUNT_PREFIX=/hostfs
+    networks:
+      public:
+        aliases:
+          - telegraf.service.docker
+    env_file:
+      - ./.env
+    privileged: true
+    restart: unless-stopped
+    container_name: telegraf

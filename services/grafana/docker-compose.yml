@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  grafana:
+    image: 192.168.86.8:5000/services/grafana:9.4.3
+    build: ./services/grafana
+    volumes:
+      - /mnt/user/appdata/grafana/data:/var/lib/grafana
+    networks:
+      public:
+        aliases:
+          - grafana.service.docker
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.kurtina.ca`)'
+      - 'traefik.http.routers.grafana.entryPoints=https'
+      - 'traefik.http.routers.grafana.tls=true'
+      - 'traefik.http.routers.grafana.tls.certresolver=letsencrypt'
+      - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+    user: '0'
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    container_name: grafana
