@@ -1,15 +1,13 @@
-set shell := ["/usr/bin/env", "bash"]
+set shell := ["/usr/bin/env", "bash", "-c"]
+set dotenv-load := false
 
-build *TARGETS:
-  #!/usr/bin/env bash
+docker := "docker -H ssh://root@192.168.86.8"
+compose := docker + " compose -p rosedale -f docker-compose.yml " + `find . -type f -name 'docker-compose.yml' -not -path "*/node_modules/*" -prune -exec echo -n ' -f {}' \;`
 
-  if [[ ! -z "{{TARGETS}}" ]] ; then
-    for target in {{TARGETS}} ; do
-      if [[ -f "./services/${target}/justfile" ]] ; then
-        if [[ $(just -f ./services/${target}/justfile --list | grep -e "^ *build") ]] ; then
-          just -f ./services/${target}/justfile build
-          continue
-        fi
-      fi
-    done
-  fi
+deploy *SERVICES:
+  {{compose}} \
+    up --build -d {{SERVICES}}
+
+logs *SERVICES:
+  {{compose}} \
+    logs -ft {{SERVICES}}

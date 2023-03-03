@@ -1,0 +1,13 @@
+version: '3'
+
+services: {}
+
+networks:
+  public:
+    driver: bridge
+
+  private:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
