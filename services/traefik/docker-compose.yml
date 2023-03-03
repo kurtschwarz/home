@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  traefik:
+    image: 192.168.86.8:5000/services/traefik:v2.8.3
+    build: ./services/traefik
+    volumes:
+      - /mnt/user/appdata/traefik/config:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 0.0.0.0:80:80/tcp
+      - 0.0.0.0:443:443/tcp
+    networks:
+      public:
+        aliases:
+          - traefik.service.docker
+    restart: unless-stopped
+    container_name: traefik

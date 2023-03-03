@@ -1,0 +1,1 @@
+docker context create rosedale --docker "host=ssh://root@192.168.86.8"
