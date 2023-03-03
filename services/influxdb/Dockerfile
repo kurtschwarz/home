@@ -1,0 +1,1 @@
+FROM docker.io/library/influxdb:1.8.10@sha256:3dd5c0fd48b77b0e4b04d5bd6e983e30a2c66cb8e373f351132e80cd08db5fe1 AS influxdb

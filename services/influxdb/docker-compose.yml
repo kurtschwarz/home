@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  influxdb:
+    image: 192.168.86.8:5000/services/influxdb:1.8.10
+    build: ./services/influxdb
+    volumes:
+      - /mnt/user/appdata/influxdb/data:/var/lib/influxdb2
+    ports:
+      - 0.0.0.0:8086:8086/tcp
+    networks:
+      private:
+        aliases:
+          - influxdb.service.docker
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    container_name: influxdb
