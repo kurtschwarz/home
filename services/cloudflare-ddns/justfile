@@ -1,7 +1,0 @@
-#!/usr/bin/env -S just --justfile
-
-build:
-  docker build -t ghcr.io/kurtschwarz/cloudflare-ddns -f Dockerfile .
-
-audit:
-  docker scan ghcr.io/kurtschwarz/cloudflare-ddns
