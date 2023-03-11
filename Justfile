@@ -6,7 +6,7 @@ compose := docker + " compose -p rosedale -f docker-compose.yml " + `find . -typ
 
 build *SERVICES:
   {{compose}} \
-    build {{SERVICES}}
+    up --build -d {{SERVICES}}
 
 deploy *SERVICES:
   {{compose}} \
