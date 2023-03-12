@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   influxdb:
-    image: 192.168.86.8:5000/services/influxdb:1.8.10
+    image: 192.168.86.8:5000/services/influxdb:2.6.1
     build: ./services/influxdb
     volumes:
       - /mnt/user/appdata/influxdb/data:/var/lib/influxdb2
