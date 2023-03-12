@@ -24,7 +24,7 @@ services:
           - plex.service.docker
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.plex.rule=Host(`plex.kurtina.ca`)'
+      - 'traefik.http.routers.plex.rule=Host(`plex.$PUBLIC_DOMAIN_ROOT`)'
       - 'traefik.http.routers.plex.entryPoints=https'
       - 'traefik.http.routers.plex.tls=true'
       - 'traefik.http.routers.plex.tls.certresolver=letsencrypt'

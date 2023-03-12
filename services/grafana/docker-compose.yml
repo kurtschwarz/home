@@ -12,7 +12,7 @@ services:
           - grafana.service.docker
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.grafana.rule=Host(`grafana.kurtina.ca`)'
+      - 'traefik.http.routers.grafana.rule=Host(`grafana.$PUBLIC_DOMAIN_ROOT`)'
       - 'traefik.http.routers.grafana.entryPoints=https'
       - 'traefik.http.routers.grafana.tls=true'
       - 'traefik.http.routers.grafana.tls.certresolver=letsencrypt'
