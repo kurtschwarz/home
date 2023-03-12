@@ -14,6 +14,48 @@ services:
     restart: always
     container_name: registry
 
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2023.2.3@sha256:0520e5ee88b6b24e3299c86c3cdac176b9098a40a77ade9ccd5f8a98ba61a136
+    command: server
+    volumes:
+      - /mnt/user/appdata/authentik/media:/media
+    networks:
+      public:
+        aliases:
+          - authentik-server.service.docker
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authentik.rule=Host(`authentik.$PUBLIC_DOMAIN_ROOT`)'
+      - 'traefik.http.routers.authentik.entryPoints=https'
+      - 'traefik.http.routers.authentik.tls=true'
+      - 'traefik.http.routers.authentik.tls.certresolver=letsencrypt'
+
+      - "traefik.http.routers.authentik-outpost.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.$PUBLIC_DOMAIN_ROOT`) && PathPrefix(`/outpost.goauthentik.io/`)"
+      - "traefik.http.routers.authentik-outpost.entrypoints=websecure"
+      - "traefik.http.routers.authentik-outpost.tls=true"
+      - "traefik.http.routers.authentik-outpost.tls.certresolver=letsencrypt"
+
+      - 'traefik.http.services.authentik.loadbalancer.server.port=9000'
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    container_name: authentik-server
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2023.2.3@sha256:0520e5ee88b6b24e3299c86c3cdac176b9098a40a77ade9ccd5f8a98ba61a136
+    command: worker
+    volumes:
+      - /mnt/user/appdata/authentik/media:/media
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      public:
+        aliases:
+          - authentik-worker.service.docker
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    container_name: authentik-worker
+
   postgres:
     image: docker.io/library/postgres:15.2@sha256:50a96a21f2992518c2cb4601467cf27c7ac852542d8913c1872fe45cd6449947
     volumes:
