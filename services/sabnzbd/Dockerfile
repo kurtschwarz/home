@@ -1,0 +1,1 @@
+FROM lscr.io/linuxserver/sabnzbd:3.7.2@sha256:5fadae508b87dcad4252f8605fde323a6006bb75e176e62df5722b124dfd67c0 AS sabnzbd

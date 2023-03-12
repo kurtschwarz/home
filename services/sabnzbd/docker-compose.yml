@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  sabnzbd:
+    image: 192.168.86.8:5000/services/sabnzbd:3.7.2
+    build: ./services/sabnzbd
+    volumes:
+      - /mnt/user/appdata/sabnzbd/config:/config
+      - /mnt/user/media/Downloads/Completed:/downloads
+      - /mnt/user/media/Downloads/Incomplete:/incomplete-downloads
+    networks:
+      public:
+        aliases:
+          - sabnzbd.service.docker
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.$PUBLIC_DOMAIN_ROOT`)'
+      - 'traefik.http.routers.sabnzbd.entryPoints=https'
+      - 'traefik.http.routers.sabnzbd.tls=true'
+      - 'traefik.http.routers.sabnzbd.tls.certresolver=letsencrypt'
+      - "traefik.http.routers.sabnzbd.middlewares=authentik@file"
+      - 'traefik.http.services.sabnzbd.loadbalancer.server.port=8080'
+    restart: unless-stopped
+    container_name: sabnzbd
