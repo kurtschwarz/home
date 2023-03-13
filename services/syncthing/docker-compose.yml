@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  syncthing:
+    image: 192.168.86.8:5000/services/syncthing:1.23.2
+    build: ./services/syncthing
+    volumes:
+      - /mnt/user/appdata/syncthing/config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    networks:
+      public:
+        aliases:
+          - syncthing.service.docker
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.syncthing.rule=Host(`syncthing.$PUBLIC_DOMAIN_ROOT`)'
+      - 'traefik.http.routers.syncthing.entryPoints=https'
+      - 'traefik.http.routers.syncthing.tls=true'
+      - 'traefik.http.routers.syncthing.tls.certresolver=letsencrypt'
+      - "traefik.http.routers.syncthing.middlewares=authentik@file"
+      - 'traefik.http.services.syncthing.loadbalancer.server.port=8384'
+    restart: unless-stopped
+    container_name: syncthing
