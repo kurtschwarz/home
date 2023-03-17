@@ -15,6 +15,7 @@ type PostgreSQL struct {
 	Image           string
 	Port            int
 	Replicas        int
+	Storage         string
 	DefaultUser     *string
 	DefaultPassword *string
 }
@@ -82,7 +83,7 @@ func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVo
 		Spec: &corev1.PersistentVolumeSpecArgs{
 			StorageClassName: pulumi.String("microk8s-hostpath"),
 			Capacity: pulumi.StringMap{
-				"storage": pulumi.String("20Gi"),
+				"storage": pulumi.String(c.Storage),
 			},
 			AccessModes: &pulumi.StringArray{
 				pulumi.String("ReadWriteOnce"),
@@ -108,7 +109,7 @@ func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVo
 			StorageClassName: pulumi.String("microk8s-hostpath"),
 			Resources: &corev1.ResourceRequirementsArgs{
 				Requests: pulumi.StringMap{
-					"storage": pulumi.String("20Gi"),
+					"storage": pulumi.String(c.Storage),
 				},
 			},
 			AccessModes: &pulumi.StringArray{
