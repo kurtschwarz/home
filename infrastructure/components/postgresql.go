@@ -13,6 +13,8 @@ import (
 type PostgreSQL struct {
 	name            string
 	Image           string
+	Port            int
+	Replicas        int
 	DefaultUser     *string
 	DefaultPassword *string
 }
@@ -144,7 +146,7 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 		},
 		Spec: &appsv1.StatefulSetSpecArgs{
 			ServiceName: pulumi.String(name),
-			Replicas:    pulumi.Int(1),
+			Replicas:    pulumi.Int(c.Replicas),
 			Selector: &metav1.LabelSelectorArgs{
 				MatchLabels: statefulSetLabels,
 			},
@@ -160,7 +162,7 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 							Ports: &corev1.ContainerPortArray{
 								&corev1.ContainerPortArgs{
 									Name:          pulumi.String(name),
-									ContainerPort: pulumi.Int(5432),
+									ContainerPort: pulumi.Int(c.Port),
 								},
 							},
 							EnvFrom: &corev1.EnvFromSourceArray{
@@ -212,7 +214,7 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 			},
 			Ports: &corev1.ServicePortArray{
 				&corev1.ServicePortArgs{
-					Port: pulumi.Int(5432),
+					Port: pulumi.Int(c.Port),
 					Name: pulumi.String(name),
 				},
 			},
