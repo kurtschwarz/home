@@ -1,0 +1,4 @@
+config:
+  postgres:password:
+    secure: AAABACA9dCKLXU4dY3WsCNXpsPw5TI2dOGIC6DWa1IvoXN8ogJG6RpP0dvECaRvgw1JsdYLexxlXUpXUjz8N5ESmK0QEygPgQCVd9Xr4Mx15jrJMIKIWNUKJwTJzIbDn
+  postgres:user: kurtina
