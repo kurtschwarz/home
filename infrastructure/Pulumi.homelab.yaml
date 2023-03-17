@@ -1,4 +1,6 @@
 config:
+  infrastructure:certManager:
+    acmeEmail: kurt@unkn.co
   infrastructure:postgres:
     image: docker.io/library/postgres:15.2@sha256:50a96a21f2992518c2cb4601467cf27c7ac852542d8913c1872fe45cd6449947
     port: 5432

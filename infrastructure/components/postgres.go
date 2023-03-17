@@ -220,7 +220,9 @@ func (c *Postgres) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resourc
 				},
 			},
 		},
-	})
+	}, pulumi.DependsOn([]pulumi.Resource{
+		statefulSet,
+	}))
 
 	if err != nil {
 		return []pulumi.Resource{}, err
