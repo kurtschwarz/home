@@ -10,7 +10,7 @@ import (
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-type PostgreSQL struct {
+type Postgres struct {
 	name            string
 	Image           string
 	Port            int
@@ -20,14 +20,14 @@ type PostgreSQL struct {
 	DefaultPassword *string
 }
 
-func (c *PostgreSQL) provisionRandomUser(ctx *pulumi.Context) (*random.RandomString, error) {
+func (c *Postgres) provisionRandomUser(ctx *pulumi.Context) (*random.RandomString, error) {
 	return random.NewRandomString(ctx, fmt.Sprintf("%s-random-user", c.name), &random.RandomStringArgs{
 		Length:  pulumi.Int(16),
 		Special: pulumi.Bool(false),
 	})
 }
 
-func (c *PostgreSQL) provisionRandomPassword(ctx *pulumi.Context) (*random.RandomPassword, error) {
+func (c *Postgres) provisionRandomPassword(ctx *pulumi.Context) (*random.RandomPassword, error) {
 	return random.NewRandomPassword(ctx, fmt.Sprintf("%s-random-password", c.name), &random.RandomPasswordArgs{
 		Length:          pulumi.Int(64),
 		Special:         pulumi.Bool(true),
@@ -35,7 +35,7 @@ func (c *PostgreSQL) provisionRandomPassword(ctx *pulumi.Context) (*random.Rando
 	})
 }
 
-func (c *PostgreSQL) provisionConfig(ctx *pulumi.Context) (*corev1.ConfigMap, error) {
+func (c *Postgres) provisionConfig(ctx *pulumi.Context) (*corev1.ConfigMap, error) {
 	var defaultUser pulumi.StringInput
 	var defaultPassword pulumi.StringInput
 
@@ -72,7 +72,7 @@ func (c *PostgreSQL) provisionConfig(ctx *pulumi.Context) (*corev1.ConfigMap, er
 	})
 }
 
-func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
+func (c *Postgres) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
 	persistentVolumeName := fmt.Sprintf("%s-pv", c.name)
 	persistentVolumeLabels := pulumi.StringMap{"app": pulumi.String(c.name), "type": pulumi.String("local")}
 	persistentVolume, err := corev1.NewPersistentVolume(ctx, persistentVolumeName, &corev1.PersistentVolumeArgs{
@@ -125,7 +125,7 @@ func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVo
 	return persistentVolume, persistentVolumeClaim, nil
 }
 
-func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
+func (c *Postgres) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
 	c.name = name
 
 	configMap, err := c.provisionConfig(ctx)

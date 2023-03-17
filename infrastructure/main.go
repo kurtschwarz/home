@@ -13,14 +13,14 @@ func ProvisionComponent[C components.Component](ctx *pulumi.Context, name string
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		var postgres components.PostgreSQL
+		var postgres components.Postgres
 		var redis components.Redis
 
 		config := config.New(ctx, "")
 		config.RequireSecretObject("postgres", &postgres)
 		config.RequireSecretObject("redis", &redis)
 
-		ProvisionComponent(ctx, "postgresql", &postgres)
+		ProvisionComponent(ctx, "postgres", &postgres)
 		ProvisionComponent(ctx, "redis", &redis)
 
 		return nil
