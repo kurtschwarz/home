@@ -6,18 +6,72 @@ import (
 	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apps/v1"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
+	random "github.com/pulumi/pulumi-random/sdk/v4/go/random"
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 type PostgreSQL struct {
+	name            string
 	Image           string
 	DefaultUser     *string
 	DefaultPassword *string
 }
 
-func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context, name string) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
-	persistentVolumeName := fmt.Sprintf("%s-pv", name)
-	persistentVolumeLabels := pulumi.StringMap{"app": pulumi.String(name), "type": pulumi.String("local")}
+func (c *PostgreSQL) provisionRandomUser(ctx *pulumi.Context) (*random.RandomString, error) {
+	return random.NewRandomString(ctx, fmt.Sprintf("%s-random-user", c.name), &random.RandomStringArgs{
+		Length:  pulumi.Int(16),
+		Special: pulumi.Bool(false),
+	})
+}
+
+func (c *PostgreSQL) provisionRandomPassword(ctx *pulumi.Context) (*random.RandomPassword, error) {
+	return random.NewRandomPassword(ctx, fmt.Sprintf("%s-random-password", c.name), &random.RandomPasswordArgs{
+		Length:          pulumi.Int(64),
+		Special:         pulumi.Bool(true),
+		OverrideSpecial: pulumi.String("!#$%&*()-_=+[]{}<>:?"),
+	})
+}
+
+func (c *PostgreSQL) provisionConfig(ctx *pulumi.Context) (*corev1.ConfigMap, error) {
+	var defaultUser pulumi.StringInput
+	var defaultPassword pulumi.StringInput
+
+	if c.DefaultUser == nil {
+		randomUser, err := c.provisionRandomUser(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		defaultUser = randomUser.Result
+	}
+
+	if c.DefaultPassword == nil {
+		randomPassword, err := c.provisionRandomPassword(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		defaultPassword = randomPassword.Result
+	}
+
+	configMapName := fmt.Sprintf("%s-config-map", c.name)
+	configMapLabels := pulumi.StringMap{"app": pulumi.String(c.name)}
+
+	return corev1.NewConfigMap(ctx, configMapName, &corev1.ConfigMapArgs{
+		Metadata: &metav1.ObjectMetaArgs{
+			Name:   pulumi.String(configMapName),
+			Labels: configMapLabels,
+		},
+		Data: &pulumi.StringMap{
+			"POSTGRES_USER":     defaultUser,
+			"POSTGRES_PASSWORD": defaultPassword,
+		},
+	})
+}
+
+func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
+	persistentVolumeName := fmt.Sprintf("%s-pv", c.name)
+	persistentVolumeLabels := pulumi.StringMap{"app": pulumi.String(c.name), "type": pulumi.String("local")}
 	persistentVolume, err := corev1.NewPersistentVolume(ctx, persistentVolumeName, &corev1.PersistentVolumeArgs{
 		Metadata: &metav1.ObjectMetaArgs{
 			Name:   pulumi.String(persistentVolumeName),
@@ -41,8 +95,8 @@ func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context, name string) (*corev1
 		return nil, nil, err
 	}
 
-	persistentVolumeClaimName := fmt.Sprintf("%s-pv-claim", name)
-	persistentVolumeClaimLabels := pulumi.StringMap{"app": pulumi.String(name)}
+	persistentVolumeClaimName := fmt.Sprintf("%s-pv-claim", c.name)
+	persistentVolumeClaimLabels := pulumi.StringMap{"app": pulumi.String(c.name)}
 	persistentVolumeClaim, err := corev1.NewPersistentVolumeClaim(ctx, persistentVolumeClaimName, &corev1.PersistentVolumeClaimArgs{
 		Metadata: &metav1.ObjectMetaArgs{
 			Name:   pulumi.String(persistentVolumeClaimName),
@@ -69,24 +123,14 @@ func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context, name string) (*corev1
 }
 
 func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
-	persistentVolume, persistentVolumeClaim, err := c.provisionVolumes(ctx, name)
+	c.name = name
+
+	configMap, err := c.provisionConfig(ctx)
 	if err != nil {
 		return []pulumi.Resource{}, err
 	}
 
-	configMapName := fmt.Sprintf("%s-config-map", name)
-	configMapLabels := pulumi.StringMap{"app": pulumi.String(name)}
-	configMap, err := corev1.NewConfigMap(ctx, configMapName, &corev1.ConfigMapArgs{
-		Metadata: &metav1.ObjectMetaArgs{
-			Name:   pulumi.String(configMapName),
-			Labels: configMapLabels,
-		},
-		Data: &pulumi.StringMap{
-			// "POSTGRES_USER":     c.DefaultUser.ToStringPtrOutput().Elem(),
-			// "POSTGRES_PASSWORD": c.DefaultPassword.ToStringPtrOutput().Elem(),
-		},
-	})
-
+	persistentVolume, persistentVolumeClaim, err := c.provisionVolumes(ctx)
 	if err != nil {
 		return []pulumi.Resource{}, err
 	}
