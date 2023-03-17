@@ -7,16 +7,15 @@ import (
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 type PostgreSQL struct {
-	Image string
+	Image    string
+	User     string
+	Password string
 }
 
 func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
-	config := config.New(ctx, "postgres")
-
 	persistentVolumeName := fmt.Sprintf("%s-pv", name)
 	persistentVolumeLabels := pulumi.StringMap{"app": pulumi.String(name), "type": pulumi.String("local")}
 	persistentVolume, err := corev1.NewPersistentVolume(ctx, persistentVolumeName, &corev1.PersistentVolumeArgs{
@@ -74,8 +73,8 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 			Labels: configMapLabels,
 		},
 		Data: &pulumi.StringMap{
-			"POSTGRES_USER":     pulumi.String(config.Require("user")),
-			"POSTGRES_PASSWORD": config.RequireSecret("password"),
+			"POSTGRES_USER":     pulumi.String(c.User),
+			"POSTGRES_PASSWORD": pulumi.String(c.Password),
 		},
 	})
 
