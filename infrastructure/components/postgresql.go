@@ -10,12 +10,12 @@ import (
 )
 
 type PostgreSQL struct {
-	Image    string
-	User     string
-	Password string
+	Image           string
+	DefaultUser     pulumi.StringPtrInput
+	DefaultPassword pulumi.StringPtrInput
 }
 
-func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
+func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context, name string) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
 	persistentVolumeName := fmt.Sprintf("%s-pv", name)
 	persistentVolumeLabels := pulumi.StringMap{"app": pulumi.String(name), "type": pulumi.String("local")}
 	persistentVolume, err := corev1.NewPersistentVolume(ctx, persistentVolumeName, &corev1.PersistentVolumeArgs{
@@ -38,7 +38,7 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 	})
 
 	if err != nil {
-		return []pulumi.Resource{}, err
+		return nil, nil, err
 	}
 
 	persistentVolumeClaimName := fmt.Sprintf("%s-pv-claim", name)
@@ -62,6 +62,15 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 	}, pulumi.DependsOn([]pulumi.Resource{persistentVolume}))
 
 	if err != nil {
+		return nil, nil, err
+	}
+
+	return persistentVolume, persistentVolumeClaim, nil
+}
+
+func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resource, error) {
+	persistentVolume, persistentVolumeClaim, err := c.provisionVolumes(ctx, name)
+	if err != nil {
 		return []pulumi.Resource{}, err
 	}
 
@@ -73,8 +82,8 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 			Labels: configMapLabels,
 		},
 		Data: &pulumi.StringMap{
-			"POSTGRES_USER":     pulumi.String(c.User),
-			"POSTGRES_PASSWORD": pulumi.String(c.Password),
+			"POSTGRES_USER":     c.DefaultUser.ToStringPtrOutput().Elem(),
+			"POSTGRES_PASSWORD": c.DefaultPassword.ToStringPtrOutput().Elem(),
 		},
 	})
 
@@ -129,7 +138,7 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 						&corev1.VolumeArgs{
 							Name: pulumi.String(fmt.Sprintf("%s-pv-data", name)),
 							PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs{
-								ClaimName: pulumi.String(persistentVolumeClaimName),
+								ClaimName: persistentVolumeClaim.Metadata.Name().Elem(),
 							},
 						},
 					},

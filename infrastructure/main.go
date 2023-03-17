@@ -16,7 +16,9 @@ func main() {
 		config := config.New(ctx, "")
 
 		ProvisionComponent(ctx, "postgresql", &components.PostgreSQL{
-			Image: config.Require("postgresImage"),
+			Image:           config.Require("postgresImage"),
+			DefaultUser:     pulumi.String(config.Get("postgresUser")),
+			DefaultPassword: config.GetSecret("postgresPassword"),
 		})
 
 		ProvisionComponent(ctx, "redis", &components.Redis{
