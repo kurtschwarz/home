@@ -11,8 +11,8 @@ import (
 
 type PostgreSQL struct {
 	Image           string
-	DefaultUser     pulumi.StringPtrInput
-	DefaultPassword pulumi.StringPtrInput
+	DefaultUser     *string
+	DefaultPassword *string
 }
 
 func (c *PostgreSQL) provisionVolumes(ctx *pulumi.Context, name string) (*corev1.PersistentVolume, *corev1.PersistentVolumeClaim, error) {
@@ -82,8 +82,8 @@ func (c *PostgreSQL) Provision(ctx *pulumi.Context, name string) ([]pulumi.Resou
 			Labels: configMapLabels,
 		},
 		Data: &pulumi.StringMap{
-			"POSTGRES_USER":     c.DefaultUser.ToStringPtrOutput().Elem(),
-			"POSTGRES_PASSWORD": c.DefaultPassword.ToStringPtrOutput().Elem(),
+			// "POSTGRES_USER":     c.DefaultUser.ToStringPtrOutput().Elem(),
+			// "POSTGRES_PASSWORD": c.DefaultPassword.ToStringPtrOutput().Elem(),
 		},
 	})
 
