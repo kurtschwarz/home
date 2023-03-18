@@ -2,6 +2,14 @@ config:
   traefik:image: docker.io/library/traefik:2.9.8@sha256:553239e27c4614d0477651415205b9b119f7a98f698e6562ef383c9d8ff3b6e6
   traefik:replicas: 1
   traefik:traefik.yaml: |
+    log:
+      level: DEBUG
+    accessLog: {}
+    api:
+      insecure: true
+      dashboard: true
+    debug:
+      enabled: true
     defaultEntryPoints:
       - web
       - web-secure
@@ -22,8 +30,9 @@ config:
           advertisedPort: 443
     providers:
       kubernetesCRD:
-        ingressClass: "traefik-internal"
+        allowCrossNamespace: true
       kubernetesIngress:
-        ingressClass: "traefik-cert-manager"
+        ingressClass: traefik-cert-manager
     experimental:
       http3: true
+      kubernetesGateway: true

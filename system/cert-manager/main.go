@@ -26,7 +26,7 @@ func main() {
 				"spec": kubernetes.UntypedArgs{
 					"acme": kubernetes.UntypedArgs{
 						"email":  pulumi.String(config.Require("acmeEmail")),
-						"server": pulumi.String("https://acme-v02.api.letsencrypt.org/directory"),
+						"server": pulumi.String("https://acme-staging-v02.api.letsencrypt.org/directory"),
 						"privateKeySecretRef": kubernetes.UntypedArgs{
 							"name": pulumi.String("letsencrypt-account-key"),
 						},

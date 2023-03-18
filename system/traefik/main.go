@@ -92,6 +92,27 @@ func main() {
 							pulumi.String("update"),
 						},
 					},
+					rbacv1.PolicyRuleArgs{
+						ApiGroups: pulumi.StringArray{
+							pulumi.String("traefik.containo.us"),
+						},
+						Resources: pulumi.StringArray{
+							pulumi.String("ingressroutes"),
+							pulumi.String("ingressroutetcps"),
+							pulumi.String("ingressrouteudps"),
+							pulumi.String("middlewares"),
+							pulumi.String("middlewaretcps"),
+							pulumi.String("tlsoptions"),
+							pulumi.String("tlsstores"),
+							pulumi.String("traefikservices"),
+							pulumi.String("serverstransports"),
+						},
+						Verbs: pulumi.StringArray{
+							pulumi.String("get"),
+							pulumi.String("list"),
+							pulumi.String("watch"),
+						},
+					},
 				},
 			},
 			pulumi.Parent(namespace),
@@ -187,6 +208,10 @@ func main() {
 										&corev1.ContainerPortArgs{
 											Name:          pulumi.String("web-secure"),
 											ContainerPort: pulumi.Int(443),
+										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("dashboard"),
+											ContainerPort: pulumi.Int(8080),
 										},
 									},
 									VolumeMounts: &corev1.VolumeMountArray{
