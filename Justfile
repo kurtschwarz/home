@@ -3,3 +3,6 @@ set dotenv-load := false
 
 deploy TARGET:
   pulumi --cwd {{TARGET}} up --refresh
+
+destroy TARGET:
+  pulumi --cwd {{TARGET}} destroy
