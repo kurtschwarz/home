@@ -34,7 +34,7 @@ func main() {
 							{
 								"http01": kubernetes.UntypedArgs{
 									"ingress": kubernetes.UntypedArgs{
-										"class": "public",
+										"class": "traefik-cert-manager",
 									},
 								},
 							},

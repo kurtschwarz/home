@@ -1,0 +1,29 @@
+config:
+  traefik:image: docker.io/library/traefik:2.9.8@sha256:553239e27c4614d0477651415205b9b119f7a98f698e6562ef383c9d8ff3b6e6
+  traefik:replicas: 1
+  traefik:traefik.yaml: |
+    defaultEntryPoints:
+      - web
+      - web-secure
+    entryPoints:
+      web:
+        address: ":80"
+        transport:
+          respondingTimeouts:
+            readTimeout: 60
+            writeTimeout: 60
+      web-secure:
+        address: ":443"
+        transport:
+          respondingTimeouts:
+            readTimeout: 60
+            writeTimeout: 60
+        http3:
+          advertisedPort: 443
+    providers:
+      kubernetesCRD:
+        ingressClass: "traefik-internal"
+      kubernetesIngress:
+        ingressClass: "traefik-cert-manager"
+    experimental:
+      http3: true
