@@ -1,2 +1,4 @@
 config:
   certManager:acmeEmail: kurt@unkn.co
+  certManager:domains:
+    - grafana.kurtina.ca
