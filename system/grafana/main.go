@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	kubernetes "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
 	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions"
 	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apps/v1"
@@ -14,13 +16,26 @@ func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
 		config := config.New(ctx, "grafana")
 
+		namespaceRef, err := pulumi.NewStackReference(
+			ctx,
+			fmt.Sprintf("kurtschwarz/homelab-system-monitoring/%s", ctx.Stack()),
+			nil,
+		)
+
+		if err != nil {
+			return err
+		}
+
+		namespace := namespaceRef.GetOutput(pulumi.String("namespace")).AsStringOutput()
+
 		deploymentLabels := pulumi.StringMap{"app": pulumi.String("grafana")}
 		deployment, err := appsv1.NewDeployment(
 			ctx,
 			"grafana-deployment",
 			&appsv1.DeploymentArgs{
 				Metadata: &metav1.ObjectMetaArgs{
-					Labels: deploymentLabels,
+					Labels:    deploymentLabels,
+					Namespace: namespace,
 				},
 				Spec: &appsv1.DeploymentSpecArgs{
 					Selector: &metav1.LabelSelectorArgs{
@@ -28,7 +43,8 @@ func main() {
 					},
 					Template: corev1.PodTemplateSpecArgs{
 						Metadata: &metav1.ObjectMetaArgs{
-							Labels: deploymentLabels,
+							Labels:    deploymentLabels,
+							Namespace: namespace,
 						},
 						Spec: corev1.PodSpecArgs{
 							SecurityContext: &corev1.PodSecurityContextArgs{
@@ -65,6 +81,9 @@ func main() {
 			ctx,
 			"grafana-service",
 			&corev1.ServiceArgs{
+				Metadata: &metav1.ObjectMetaArgs{
+					Namespace: namespace,
+				},
 				Spec: &corev1.ServiceSpecArgs{
 					Type:            pulumi.String("LoadBalancer"),
 					SessionAffinity: pulumi.String("None"),
@@ -96,7 +115,7 @@ func main() {
 				Kind:       pulumi.String("IngressRoute"),
 				Metadata: &metav1.ObjectMetaArgs{
 					Name:      pulumi.String("grafana"),
-					Namespace: pulumi.String("default"),
+					Namespace: namespace,
 				},
 				OtherFields: kubernetes.UntypedArgs{
 					"spec": kubernetes.UntypedArgs{
