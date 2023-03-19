@@ -1,4 +1,4 @@
-module infrastructure
+module github.com/kurtschwarz/home
 
 go 1.18
 

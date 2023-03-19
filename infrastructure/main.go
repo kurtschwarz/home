@@ -1,7 +1,7 @@
 package main
 
 import (
-	"infrastructure/components"
+	"github.com/kurtschwarz/home/infrastructure/components"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
