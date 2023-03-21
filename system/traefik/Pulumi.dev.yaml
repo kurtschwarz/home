@@ -26,6 +26,7 @@ config:
               to: web-secure
               scheme: https
               permanent: true
+              priority: 100
       web-secure:
         address: ":443"
         transport:

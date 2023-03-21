@@ -31,6 +31,14 @@ func main() {
 								"http01": kubernetes.UntypedArgs{
 									"ingress": kubernetes.UntypedArgs{
 										"class": "traefik-cert-manager",
+										"ingressTemplate": kubernetes.UntypedArgs{
+											"metadata": kubernetes.UntypedArgs{
+												"annotations": kubernetes.UntypedArgs{
+													"kubernetes.io/ingress.class":                   "traefik",
+													"traefik.ingress.kubernetes.io/router.priority": "100",
+												},
+											},
+										},
 									},
 								},
 							},
