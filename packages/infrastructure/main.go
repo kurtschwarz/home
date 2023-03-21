@@ -2,8 +2,12 @@ package infrastructure
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	kubernetes "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
+	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apiextensions"
+	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
+	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 func RequireNamespace(ctx *pulumi.Context, project string, env string) pulumi.StringOutput {
@@ -30,4 +34,39 @@ func MergeStringMap(m ...pulumi.StringMap) pulumi.StringMap {
 	}
 
 	return o
+}
+
+func ProvisionCertificate(ctx *pulumi.Context, namespace pulumi.StringInput, domain string) (*apiextensions.CustomResource, error) {
+	name := strings.Replace(domain, ".", "-", -1)
+
+	certificate, err := apiextensions.NewCustomResource(ctx, name, &apiextensions.CustomResourceArgs{
+		ApiVersion: pulumi.String("cert-manager.io/v1"),
+		Kind:       pulumi.String("Certificate"),
+		Metadata: &metav1.ObjectMetaArgs{
+			Name:      pulumi.String(name),
+			Namespace: namespace,
+		},
+		OtherFields: kubernetes.UntypedArgs{
+			"spec": kubernetes.UntypedArgs{
+				"commonName": pulumi.String(domain),
+				"secretName": pulumi.String(name),
+				"secretTemplate": kubernetes.UntypedArgs{
+					"namespace": namespace,
+				},
+				"dnsNames": pulumi.StringArray{
+					pulumi.String(domain),
+				},
+				"issuerRef": kubernetes.UntypedArgs{
+					"name": pulumi.String("cert-manager-lets-encrypt-issuer"),
+					"kind": pulumi.String("ClusterIssuer"),
+				},
+			},
+		},
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return certificate, nil
 }

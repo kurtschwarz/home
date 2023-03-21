@@ -20,6 +20,12 @@ config:
           respondingTimeouts:
             readTimeout: 60
             writeTimeout: 60
+        http:
+          redirections:
+            entryPoint:
+              to: web-secure
+              scheme: https
+              permanent: true
       web-secure:
         address: ":443"
         transport:
