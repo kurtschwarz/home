@@ -7,3 +7,4 @@ config:
   plex:mediaNfsHost: 192.168.86.8
   plex:mediaNfsPath: /mnt/user/media/Plex
   plex:replicas: 1
+  plex:domain: kurtflix.ca

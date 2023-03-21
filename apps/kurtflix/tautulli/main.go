@@ -17,7 +17,6 @@ func main() {
 		namespace := infra.RequireNamespace(ctx, "homelab-apps-kurtflix", ctx.Stack())
 
 		certificate, err := infra.ProvisionCertificate(ctx, namespace, config.Require("domain"))
-
 		if err != nil {
 			return err
 		}
