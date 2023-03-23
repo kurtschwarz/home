@@ -20,13 +20,13 @@ config:
           respondingTimeouts:
             readTimeout: 60
             writeTimeout: 60
-        http:
-          redirections:
-            entryPoint:
-              to: web-secure
-              scheme: https
-              permanent: true
-              priority: 100
+        # http:
+        #   redirections:
+        #     entryPoint:
+        #       to: web-secure
+        #       scheme: https
+        #       permanent: true
+        #       priority: 100
       web-secure:
         address: ":443"
         transport:
@@ -35,6 +35,8 @@ config:
             writeTimeout: 60
         http3:
           advertisedPort: 443
+      plex:
+        address: ":32400/tcp"
     providers:
       kubernetesCRD:
         allowCrossNamespace: true

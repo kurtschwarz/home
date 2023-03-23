@@ -209,12 +209,12 @@ func main() {
 
 		_, err = apiextensions.NewCustomResource(
 			ctx,
-			"plex-ingress-route",
+			"plex-http-ingress-route",
 			&apiextensions.CustomResourceArgs{
 				ApiVersion: pulumi.String("traefik.containo.us/v1alpha1"),
 				Kind:       pulumi.String("IngressRoute"),
 				Metadata: &metav1.ObjectMetaArgs{
-					Name:      pulumi.String("plex"),
+					Name:      pulumi.String("plex-http"),
 					Namespace: namespace,
 				},
 				OtherFields: kubernetes.UntypedArgs{
@@ -249,6 +249,39 @@ func main() {
 			pulumi.DependsOn([]pulumi.Resource{
 				certificate,
 			}),
+		)
+
+		_, err = apiextensions.NewCustomResource(
+			ctx,
+			"plex-tcp-ingress-route",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("traefik.containo.us/v1alpha1"),
+				Kind:       pulumi.String("IngressRouteTCP"),
+				Metadata: &metav1.ObjectMetaArgs{
+					Name:      pulumi.String("plex-tcp"),
+					Namespace: namespace,
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": kubernetes.UntypedArgs{
+						"entryPoints": pulumi.StringArray{
+							pulumi.String("plex"),
+						},
+						"routes": []kubernetes.UntypedArgs{
+							{
+								"match": pulumi.String("HostSNI(`*`)"),
+								"kind":  pulumi.String("Rule"),
+								"services": []kubernetes.UntypedArgs{
+									{
+										"name": service.Metadata.Name().Elem(),
+										"port": pulumi.Int(32400),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Parent(service),
 		)
 
 		if err != nil {

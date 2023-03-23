@@ -213,6 +213,10 @@ func main() {
 											Name:          pulumi.String("dashboard"),
 											ContainerPort: pulumi.Int(8080),
 										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("plex"),
+											ContainerPort: pulumi.Int(32400),
+										},
 									},
 									VolumeMounts: &corev1.VolumeMountArray{
 										&corev1.VolumeMountArgs{
@@ -271,6 +275,11 @@ func main() {
 							Port:       pulumi.Int(443),
 							Name:       pulumi.String("web-secure"),
 							TargetPort: pulumi.String("web-secure"),
+						},
+						&corev1.ServicePortArgs{
+							Port:       pulumi.Int(32400),
+							Name:       pulumi.String("plex"),
+							TargetPort: pulumi.String("plex"),
 						},
 					},
 					Selector: selectorLabels,

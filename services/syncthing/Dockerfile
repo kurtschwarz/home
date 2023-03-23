@@ -1,1 +1,0 @@
-FROM lscr.io/linuxserver/syncthing:1.23.2@sha256:b8fb0835ca9c908ac7a68606803a62771e1bc05eb89cbb8b3ce1a66619105aef AS syncthing

@@ -34,7 +34,6 @@ func main() {
 										"ingressTemplate": kubernetes.UntypedArgs{
 											"metadata": kubernetes.UntypedArgs{
 												"annotations": kubernetes.UntypedArgs{
-													"kubernetes.io/ingress.class":                   "traefik",
 													"traefik.ingress.kubernetes.io/router.priority": "100",
 												},
 											},
