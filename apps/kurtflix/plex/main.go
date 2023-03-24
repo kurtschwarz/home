@@ -251,6 +251,10 @@ func main() {
 			}),
 		)
 
+		if err != nil {
+			return err
+		}
+
 		_, err = apiextensions.NewCustomResource(
 			ctx,
 			"plex-tcp-ingress-route",
