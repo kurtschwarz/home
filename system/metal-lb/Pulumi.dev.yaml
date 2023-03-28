@@ -1,3 +1,4 @@
 config:
+  metalLb:version: v0.13.9
   metalLb:addresses:
-  - 192.168.86.10-192.168.86.20
+  - 10.0.10.2-10.0.10.3
