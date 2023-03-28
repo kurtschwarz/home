@@ -1,2 +1,3 @@
 config:
+  certManager:version: v1.11.0
   certManager:acmeEmail: kurt@unkn.co
