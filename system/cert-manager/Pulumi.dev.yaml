@@ -1,3 +1,4 @@
 config:
   certManager:version: v1.11.0
   certManager:acmeEmail: kurt@unkn.co
+  kubernetes:context: k3s
