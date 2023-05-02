@@ -2,10 +2,6 @@
 
 Megarepo for my personal [homelab](https://www.reddit.com/r/homelab/wiki/introduction/)
 
-## Services
-
- - [`cloudflare-ddns`](./services/cloudflare-ddns) – A tiny DDNS service for Cloudflare
-
 ## Hardware
 
 I'll make a pretty diagram and or include some photos at some point
@@ -24,7 +20,11 @@ I'll make a pretty diagram and or include some photos at some point
 
 ### Servers
 
- - 1x [PowerEdge R240](https://www.dell.com/en-ca/work/shop/productdetailstxn/poweredge-r240) (Intel Xeon E-2246G CPU / 16GB ECC DDR4)
+ - 1x [PowerEdge R240](https://www.dell.com/en-ca/work/shop/productdetailstxn/poweredge-r240) (Intel Xeon E-2246G CPU / 96GB ECC DDR4)
     - 4x [8TB WD Red Pro NAS Hard Drive](https://www.westerndigital.com/en-ca/products/internal-drives/wd-red-pro-sata-hdd#WD8003FFBX)
     - 1x [2TB 970 EVO Plus NVMe M.2 SSD](https://www.samsung.com/us/computing/memory-storage/solid-state-drives/ssd-970-evo-plus-nvme-m-2-2-tb-mz-v7s2t0b-am/)
     - ~3x [6TB Seagate IronWolf NAS Hard Drives](https://www.seagate.com/ca/en/internal-hard-drives/hdd/ironwolf/)~ *Replaced with 8TB WD Red Pro drives*
+ - 1x [PowerEdge R620](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r620/overview)
+ - 1x [PowerEdge R430](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r430/overview)
+   - 3x [1TB Crucial MX500](https://www.crucial.com/ssd/mx500/ct1000mx500ssd1)
+ - 1x [PowerEdge R330](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r330/overview)
