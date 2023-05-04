@@ -34,6 +34,13 @@ We've recently upgraded from 1000 Mbps cable internet to 8 Gbps fiber. We're slo
 ### Servers
 
  - 1x [Dell PowerEdge R240](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r240/overview)
+    - PERC H330
+      - 8TB WD Red Plus NAS 3.5" Drive
+      - 8TB WD Red Plus NAS 3.5" Drive
+      - 8TB WD Red Plus NAS 3.5" Drive
  - 1x [Dell PowerEdge R620](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r620/overview)
+    - PERC H710 (IT Mode)
  - 1x [Dell PowerEdge R430](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r430/overview)
+    - PERC H730 (IT Mode)
  - 1x [Dell PowerEdge R330](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r330/overview)
+    - PERC H330 (IT Mode)

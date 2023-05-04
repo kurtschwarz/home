@@ -7,6 +7,8 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.57.1
 )
 
+require github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
+
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect

@@ -37,6 +37,29 @@ func MergeStringMap(m ...pulumi.StringMap) pulumi.StringMap {
 	return o
 }
 
+func MergeVolumeMountArray(mounts ...*corev1.VolumeMountArray) *corev1.VolumeMountArray {
+	merged := corev1.VolumeMountArray{}
+
+	for _, mount := range mounts {
+		merged = append(merged, *mount...)
+	}
+
+	return &merged
+}
+
+func StringMapToEnvArray(m map[string]string) corev1.EnvVarArray {
+	envs := make(corev1.EnvVarArray, len(m))
+
+	for key, value := range m {
+		envs = append(envs, &corev1.EnvVarArgs{
+			Name:  pulumi.String(key),
+			Value: pulumi.String(value),
+		})
+	}
+
+	return envs
+}
+
 func ProvisionCertificate(ctx *pulumi.Context, namespace pulumi.StringInput, domain string) (*apiextensions.CustomResource, error) {
 	name := strings.Replace(domain, ".", "-", -1)
 
@@ -70,81 +93,4 @@ func ProvisionCertificate(ctx *pulumi.Context, namespace pulumi.StringInput, dom
 	}
 
 	return certificate, nil
-}
-
-func ProvisionLocalVolume(ctx *pulumi.Context, namespace pulumi.StringInput, name string, path string) (persistentVolume *corev1.PersistentVolume, persistentVolumeClaim *corev1.PersistentVolumeClaim, err error) {
-	if persistentVolume, err = corev1.NewPersistentVolume(
-		ctx,
-		fmt.Sprintf("%s-pv", name),
-		&corev1.PersistentVolumeArgs{
-			Metadata: &metav1.ObjectMetaArgs{
-				Name: pulumi.Sprintf("%s-pv", name),
-				Labels: pulumi.StringMap{
-					"type": pulumi.String("local"),
-				},
-				Namespace: namespace,
-			},
-			Spec: &corev1.PersistentVolumeSpecArgs{
-				NodeAffinity: &corev1.VolumeNodeAffinityArgs{
-					Required: &corev1.NodeSelectorArgs{
-						NodeSelectorTerms: &corev1.NodeSelectorTermArray{
-							&corev1.NodeSelectorTermArgs{
-								MatchExpressions: &corev1.NodeSelectorRequirementArray{
-									&corev1.NodeSelectorRequirementArgs{
-										Key:      pulumi.String("kubernetes.io/hostname"),
-										Operator: pulumi.String("In"),
-										Values: pulumi.StringArray{
-											pulumi.String("kurtina-k8s-worker-unraid"),
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-				StorageClassName:              pulumi.String("microk8s-hostpath"),
-				PersistentVolumeReclaimPolicy: pulumi.String("Retain"),
-				Capacity: pulumi.StringMap{
-					"storage": pulumi.String("20Gi"),
-				},
-				AccessModes: &pulumi.StringArray{
-					pulumi.String("ReadWriteOnce"),
-				},
-				HostPath: &corev1.HostPathVolumeSourceArgs{
-					Path: pulumi.String(path),
-				},
-			},
-		},
-	); err != nil {
-		return nil, nil, err
-	}
-
-	if persistentVolumeClaim, err = corev1.NewPersistentVolumeClaim(
-		ctx,
-		fmt.Sprintf("%s-pv-claim", name),
-		&corev1.PersistentVolumeClaimArgs{
-			Metadata: &metav1.ObjectMetaArgs{
-				Name:      pulumi.Sprintf("%s-pv-claim", name),
-				Namespace: namespace,
-				Annotations: &pulumi.StringMap{
-					"pulumi.com/skipAwait": pulumi.String("true"),
-				},
-			},
-			Spec: &corev1.PersistentVolumeClaimSpecArgs{
-				StorageClassName: pulumi.String("microk8s-hostpath"),
-				Resources: &corev1.ResourceRequirementsArgs{
-					Requests: pulumi.StringMap{
-						"storage": pulumi.String("20Gi"),
-					},
-				},
-				AccessModes: &pulumi.StringArray{
-					pulumi.String("ReadWriteOnce"),
-				},
-			},
-		},
-	); err != nil {
-		return nil, nil, err
-	}
-
-	return persistentVolume, persistentVolumeClaim, nil
 }

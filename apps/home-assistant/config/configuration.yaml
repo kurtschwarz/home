@@ -1,0 +1,22 @@
+homeassistant:
+  name: Rosedale
+  latitude: 43.4422392
+  longitude: -80.4699256
+  elevation: 300
+  unit_system: metric
+  time_zone: America/Toronto
+
+  customize_domain:
+    automation:
+      initial_state: 'on'
+  packages: !include_dir_named packages
+  auth_providers:
+  - type: homeassistant
+  - type: trusted_networks
+    trusted_networks:
+      - 10.0.0.0/16
+    allow_bypass_login: true
+
+default_config:
+
+config:
