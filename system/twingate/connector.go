@@ -103,6 +103,26 @@ func NewTwingateConnector(ctx *pulumi.Context, name string, args TwingateConnect
 						Labels:    labels,
 					},
 					Spec: &corev1.PodSpecArgs{
+						Tolerations: &corev1.TolerationArray{
+							&corev1.TolerationArgs{
+								Key:      pulumi.String("CriticalAddonsOnly"),
+								Operator: pulumi.String("Exists"),
+							},
+							&corev1.TolerationArgs{
+								Key:      pulumi.String("node-role.kubernetes.io/control-plane"),
+								Operator: pulumi.String("Exists"),
+								Effect:   pulumi.String("NoSchedule"),
+							},
+							&corev1.TolerationArgs{
+								Key:      pulumi.String("node-role.kubernetes.io/master"),
+								Operator: pulumi.String("Exists"),
+								Effect:   pulumi.String("NoSchedule"),
+							},
+						},
+						PriorityClassName: pulumi.String("system-cluster-critical"),
+						NodeSelector: pulumi.StringMap{
+							"node-role.kubernetes.io/master": pulumi.String("true"),
+						},
 						SecurityContext: &corev1.PodSecurityContextArgs{
 							Sysctls: &corev1.SysctlArray{
 								&corev1.SysctlArgs{
