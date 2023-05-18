@@ -1,154 +1,25 @@
 package main
 
 import (
+	"github.com/kurtschwarz/home/packages/infrastructure"
 	appsv1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/apps/v1"
 	corev1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/core/v1"
 	metav1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/meta/v1"
-	rbacv1 "github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes/rbac/v1"
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	config "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 func main() {
-	pulumi.Run(func(ctx *pulumi.Context) error {
+	pulumi.Run(func(ctx *pulumi.Context) (err error) {
 		config := config.New(ctx, "traefik")
+		namespace := pulumi.String(config.Require("namespace"))
 
-		namespace, err := corev1.NewNamespace(
-			ctx,
-			"traefik-namespace",
-			&corev1.NamespaceArgs{
-				Metadata: &metav1.ObjectMetaArgs{
-					Name: pulumi.String("traefik"),
-				},
-			},
-		)
-
-		if err != nil {
+		if err = provisionCrdResources(ctx); err != nil {
 			return err
 		}
 
-		serviceAccount, err := corev1.NewServiceAccount(
-			ctx,
-			"traefik-service-account",
-			&corev1.ServiceAccountArgs{
-				Metadata: &metav1.ObjectMetaArgs{
-					Namespace: namespace.Metadata.Name().Elem(),
-				},
-			},
-			pulumi.Parent(namespace),
-		)
-
-		if err != nil {
-			return err
-		}
-
-		clusterRole, err := rbacv1.NewClusterRole(
-			ctx,
-			"traefik-cluster-role",
-			&rbacv1.ClusterRoleArgs{
-				Metadata: &metav1.ObjectMetaArgs{
-					Namespace: namespace.Metadata.Name().Elem(),
-				},
-				Rules: rbacv1.PolicyRuleArray{
-					rbacv1.PolicyRuleArgs{
-						ApiGroups: pulumi.StringArray{
-							pulumi.String(""),
-						},
-						Resources: pulumi.StringArray{
-							pulumi.String("services"),
-							pulumi.String("endpoints"),
-							pulumi.String("secrets"),
-						},
-						Verbs: pulumi.StringArray{
-							pulumi.String("get"),
-							pulumi.String("list"),
-							pulumi.String("watch"),
-						},
-					},
-					rbacv1.PolicyRuleArgs{
-						ApiGroups: pulumi.StringArray{
-							pulumi.String("extensions"),
-							pulumi.String("networking.k8s.io"),
-						},
-						Resources: pulumi.StringArray{
-							pulumi.String("ingresses"),
-							pulumi.String("ingressclasses"),
-						},
-						Verbs: pulumi.StringArray{
-							pulumi.String("get"),
-							pulumi.String("list"),
-							pulumi.String("watch"),
-						},
-					},
-					rbacv1.PolicyRuleArgs{
-						ApiGroups: pulumi.StringArray{
-							pulumi.String("extensions"),
-							pulumi.String("networking.k8s.io"),
-						},
-						Resources: pulumi.StringArray{
-							pulumi.String("ingresses/status"),
-						},
-						Verbs: pulumi.StringArray{
-							pulumi.String("update"),
-						},
-					},
-					rbacv1.PolicyRuleArgs{
-						ApiGroups: pulumi.StringArray{
-							pulumi.String("traefik.containo.us"),
-						},
-						Resources: pulumi.StringArray{
-							pulumi.String("ingressroutes"),
-							pulumi.String("ingressroutetcps"),
-							pulumi.String("ingressrouteudps"),
-							pulumi.String("middlewares"),
-							pulumi.String("middlewaretcps"),
-							pulumi.String("tlsoptions"),
-							pulumi.String("tlsstores"),
-							pulumi.String("traefikservices"),
-							pulumi.String("serverstransports"),
-						},
-						Verbs: pulumi.StringArray{
-							pulumi.String("get"),
-							pulumi.String("list"),
-							pulumi.String("watch"),
-						},
-					},
-				},
-			},
-			pulumi.Parent(namespace),
-			pulumi.DependsOn([]pulumi.Resource{
-				serviceAccount,
-			}),
-		)
-
-		if err != nil {
-			return err
-		}
-
-		clusterRoleBinding, err := rbacv1.NewClusterRoleBinding(
-			ctx,
-			"traefik-cluster-role-binding",
-			&rbacv1.ClusterRoleBindingArgs{
-				Metadata: &metav1.ObjectMetaArgs{
-					Namespace: namespace.Metadata.Name().Elem(),
-				},
-				RoleRef: &rbacv1.RoleRefArgs{
-					ApiGroup: pulumi.String("rbac.authorization.k8s.io"),
-					Kind:     pulumi.String("ClusterRole"),
-					Name:     pulumi.String("traefik-role"),
-				},
-				Subjects: &rbacv1.SubjectArray{
-					&rbacv1.SubjectArgs{
-						Kind:      pulumi.String("ServiceAccount"),
-						Name:      serviceAccount.Metadata.Name().Elem(),
-						Namespace: namespace.Metadata.Name().Elem(),
-					},
-				},
-			},
-			pulumi.Parent(clusterRole),
-		)
-
-		if err != nil {
+		var serviceAccount *corev1.ServiceAccount
+		if serviceAccount, err = provisionRbacResources(ctx, namespace); err != nil {
 			return err
 		}
 
@@ -157,13 +28,12 @@ func main() {
 			"traefik-config-map",
 			&corev1.ConfigMapArgs{
 				Metadata: metav1.ObjectMetaArgs{
-					Namespace: namespace.Metadata.Name().Elem(),
+					Namespace: namespace,
 				},
 				Data: &pulumi.StringMap{
 					"traefik.yaml": pulumi.String(config.Require("traefik.yaml")),
 				},
 			},
-			pulumi.Parent(namespace),
 		)
 
 		if err != nil {
@@ -179,8 +49,11 @@ func main() {
 			"traefik-deployment",
 			&appsv1.DeploymentArgs{
 				Metadata: metav1.ObjectMetaArgs{
-					Labels:    selectorLabels,
-					Namespace: namespace.Metadata.Name().Elem(),
+					Namespace: namespace,
+					Name:      pulumi.String("traefik"),
+					Labels: infrastructure.MergeStringMap(selectorLabels, pulumi.StringMap{
+						"kubernetes.io/cluster-service": pulumi.String("true"),
+					}),
 				},
 				Spec: &appsv1.DeploymentSpecArgs{
 					Replicas: pulumi.Int(config.RequireInt("replicas")),
@@ -189,9 +62,30 @@ func main() {
 					},
 					Template: &corev1.PodTemplateSpecArgs{
 						Metadata: &metav1.ObjectMetaArgs{
-							Labels: selectorLabels,
+							Labels:    selectorLabels,
+							Namespace: namespace,
 						},
 						Spec: &corev1.PodSpecArgs{
+							Tolerations: &corev1.TolerationArray{
+								&corev1.TolerationArgs{
+									Key:      pulumi.String("CriticalAddonsOnly"),
+									Operator: pulumi.String("Exists"),
+								},
+								&corev1.TolerationArgs{
+									Key:      pulumi.String("node-role.kubernetes.io/control-plane"),
+									Operator: pulumi.String("Exists"),
+									Effect:   pulumi.String("NoSchedule"),
+								},
+								&corev1.TolerationArgs{
+									Key:      pulumi.String("node-role.kubernetes.io/master"),
+									Operator: pulumi.String("Exists"),
+									Effect:   pulumi.String("NoSchedule"),
+								},
+							},
+							PriorityClassName: pulumi.String("system-cluster-critical"),
+							NodeSelector: pulumi.StringMap{
+								"node-role.kubernetes.io/master": pulumi.String("true"),
+							},
 							ServiceAccountName: serviceAccount.Metadata.Name().Elem(),
 							Containers: &corev1.ContainerArray{
 								&corev1.ContainerArgs{
@@ -215,7 +109,18 @@ func main() {
 										},
 										&corev1.ContainerPortArgs{
 											Name:          pulumi.String("plex"),
+											Protocol:      pulumi.String("TCP"),
 											ContainerPort: pulumi.Int(32400),
+										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("syncthing-tcp"),
+											Protocol:      pulumi.String("TCP"),
+											ContainerPort: pulumi.Int(22000),
+										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("syncthing-udp"),
+											Protocol:      pulumi.String("UDP"),
+											ContainerPort: pulumi.Int(22000),
 										},
 									},
 									VolumeMounts: &corev1.VolumeMountArray{
@@ -245,9 +150,7 @@ func main() {
 					},
 				},
 			},
-			pulumi.Parent(namespace),
 			pulumi.DependsOn([]pulumi.Resource{
-				clusterRoleBinding,
 				configMap,
 			}),
 		)
@@ -261,10 +164,12 @@ func main() {
 			"traefik-service",
 			&corev1.ServiceArgs{
 				Metadata: &metav1.ObjectMetaArgs{
-					Namespace: namespace.Metadata.Name().Elem(),
+					Namespace: namespace,
+					Name:      pulumi.String("traefik"),
 				},
 				Spec: &corev1.ServiceSpecArgs{
-					Type: pulumi.String("LoadBalancer"),
+					Type:           pulumi.String("LoadBalancer"),
+					LoadBalancerIP: pulumi.String(config.Require("loadBalancerIP")),
 					Ports: &corev1.ServicePortArray{
 						&corev1.ServicePortArgs{
 							Port:       pulumi.Int(80),
@@ -278,14 +183,26 @@ func main() {
 						},
 						&corev1.ServicePortArgs{
 							Port:       pulumi.Int(32400),
+							Protocol:   pulumi.String("TCP"),
 							Name:       pulumi.String("plex"),
 							TargetPort: pulumi.String("plex"),
+						},
+						&corev1.ServicePortArgs{
+							Name:       pulumi.String("syncthing-tcp"),
+							Protocol:   pulumi.String("TCP"),
+							Port:       pulumi.Int(22000),
+							TargetPort: pulumi.String("syncthing-tcp"),
+						},
+						&corev1.ServicePortArgs{
+							Name:       pulumi.String("syncthing-udp"),
+							Protocol:   pulumi.String("UDP"),
+							Port:       pulumi.Int(22000),
+							TargetPort: pulumi.String("syncthing-udp"),
 						},
 					},
 					Selector: selectorLabels,
 				},
 			},
-			pulumi.Parent(namespace),
 			pulumi.DependsOn([]pulumi.Resource{
 				deployment,
 			}),

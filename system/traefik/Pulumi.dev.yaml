@@ -1,6 +1,8 @@
 config:
   traefik:image: docker.io/library/traefik:2.9.8@sha256:553239e27c4614d0477651415205b9b119f7a98f698e6562ef383c9d8ff3b6e6
+  traefik:namespace: kube-system
   traefik:replicas: 1
+  traefik:loadBalancerIP: 10.36.0.1
   traefik:traefik.yaml: |
     log:
       level: DEBUG
@@ -20,13 +22,6 @@ config:
           respondingTimeouts:
             readTimeout: 60
             writeTimeout: 60
-        # http:
-        #   redirections:
-        #     entryPoint:
-        #       to: web-secure
-        #       scheme: https
-        #       permanent: true
-        #       priority: 100
       web-secure:
         address: ":443"
         transport:
@@ -37,6 +32,10 @@ config:
           advertisedPort: 443
       plex:
         address: ":32400/tcp"
+      syncthing-tcp:
+        address: ":22000/tcp"
+      syncthing-udp:
+        address: ":22000/udp"
     providers:
       kubernetesCRD:
         allowCrossNamespace: true
@@ -45,3 +44,4 @@ config:
     experimental:
       http3: true
       kubernetesGateway: true
+  kubernetes:context: k3s
