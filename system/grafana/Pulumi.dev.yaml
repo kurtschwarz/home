@@ -1,5 +1,0 @@
-config:
-  grafana:image: grafana/grafana-oss:9.4.3@sha256:19f61fb673fe3e8de42e0a1b8ffe84cb78d39385b9a8480e8288f304a783c813
-  grafana:port: 3000
-  grafana:replicas: 1
-  grafana:domain: grafana.kurtina.ca

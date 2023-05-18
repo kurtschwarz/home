@@ -32,7 +32,7 @@ func main() {
 
 		_, err = apiextensions.NewCustomResource(
 			ctx,
-			"metal-lb-ip-address-pool",
+			"metallb-ip-address-pool",
 			&apiextensions.CustomResourceArgs{
 				ApiVersion: pulumi.String("metallb.io/v1beta1"),
 				Kind:       pulumi.String("IPAddressPool"),

@@ -9,16 +9,19 @@ import (
 )
 
 func main() {
-	pulumi.Run(func(ctx *pulumi.Context) error {
+	pulumi.Run(func(ctx *pulumi.Context) (err error) {
 		config := config.New(ctx, "longhorn")
-		_, err := yaml.NewConfigFile(
+
+		if _, err = yaml.NewConfigFile(
 			ctx,
 			"longhorn-manifest",
 			&yaml.ConfigFileArgs{
 				File: fmt.Sprintf("https://raw.githubusercontent.com/longhorn/longhorn/v%s/deploy/longhorn.yaml", config.Require("version")),
 			},
-		)
+		); err != nil {
+			return err
+		}
 
-		return err
+		return nil
 	})
 }

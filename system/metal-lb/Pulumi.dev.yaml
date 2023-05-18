@@ -1,5 +1,5 @@
 config:
   metalLb:version: v0.13.9
   metalLb:addresses:
-  - 10.0.3.3-10.0.3.255
+  - 10.36.0.0-10.36.255.255
   kubernetes:context: k3s

@@ -71,6 +71,7 @@ func NewTwingateConnector(ctx *pulumi.Context, name string, args TwingateConnect
 			},
 			Data: &pulumi.StringMap{
 				"TWINGATE_URL": args.TenantURL,
+				"DNS_SERVER":   pulumi.String("10.35.5.5"),
 				"LOG_LEVEL":    pulumi.String("6"),
 			},
 		},
