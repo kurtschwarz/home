@@ -4,10 +4,10 @@ set dotenv-load := true
 pulumi := "pulumi logout && pulumi login && pulumi"
 
 preview TARGET:
-  pulumi --cwd {{TARGET}} preview --refresh
+  pulumi --cwd {{TARGET}} preview --stack dev --refresh
 
 deploy TARGET:
-  pulumi --cwd {{TARGET}} up --refresh
+  pulumi --cwd {{TARGET}} up --stack dev --refresh
 
 destroy TARGET:
-  pulumi --cwd {{TARGET}} destroy
+  pulumi --cwd {{TARGET}} destroy --stack dev
