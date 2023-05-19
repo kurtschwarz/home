@@ -13,14 +13,14 @@ import (
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-		config := config.New(ctx, "sabnzbd")
+		config := config.New(ctx, "syncthing")
 
 		namespace, err := corev1.NewNamespace(
 			ctx,
-			"sabnzbd-namespace",
+			"syncthing-namespace",
 			&corev1.NamespaceArgs{
 				Metadata: &metav1.ObjectMetaArgs{
-					Name: pulumi.String("sabnzbd"),
+					Name: pulumi.String("syncthing"),
 				},
 			},
 		)
@@ -42,10 +42,10 @@ func main() {
 		var configVolumeClaim *corev1.PersistentVolumeClaim
 		if configVolumeClaim, err = corev1.NewPersistentVolumeClaim(
 			ctx,
-			"sabnzbd-config-pvc",
+			"syncthing-config-pvc",
 			&corev1.PersistentVolumeClaimArgs{
 				Metadata: &metav1.ObjectMetaArgs{
-					Name:      pulumi.String("sabnzbd-config-pvc"),
+					Name:      pulumi.String("syncthing-config-pvc"),
 					Namespace: namespace.Metadata.Name().Elem(),
 					Annotations: &pulumi.StringMap{
 						"pulumi.com/skipAwait": pulumi.String("true"),
@@ -67,18 +67,18 @@ func main() {
 			return err
 		}
 
-		var dataVolumeClaim *corev1.PersistentVolumeClaim
-		if _, dataVolumeClaim, err = infra.ProvisionLocalVolume(
+		var syncVolumeClaim *corev1.PersistentVolumeClaim
+		if _, syncVolumeClaim, err = infra.ProvisionLocalVolume(
 			ctx,
 			namespace.Metadata.Name().Elem(),
-			"sabnzbd-data",
-			"/mnt/appdata/sabnzbd",
+			"syncthing-sync",
+			"/mnt/media/Sync",
 		); err != nil {
 			return err
 		}
 
 		sharedLabels := pulumi.StringMap{
-			"app": pulumi.String("sabnzbd"),
+			"app": pulumi.String("syncthing"),
 		}
 
 		deploymentLabels := infra.MergeStringMap(
@@ -88,7 +88,7 @@ func main() {
 
 		deployment, err := appsv1.NewDeployment(
 			ctx,
-			"sabnzbd-deployment",
+			"syncthing-deployment",
 			&appsv1.DeploymentArgs{
 				Metadata: &metav1.ObjectMetaArgs{
 					Namespace: namespace.Metadata.Name().Elem(),
@@ -110,7 +110,7 @@ func main() {
 							},
 							Containers: &corev1.ContainerArray{
 								&corev1.ContainerArgs{
-									Name:  pulumi.String("sabnzbd"),
+									Name:  pulumi.String("syncthing"),
 									Image: pulumi.String(config.Require("image")),
 									ReadinessProbe: &corev1.ProbeArgs{
 										TcpSocket: &corev1.TCPSocketActionArgs{
@@ -119,36 +119,52 @@ func main() {
 										InitialDelaySeconds: pulumi.Int(20),
 										PeriodSeconds:       pulumi.Int(15),
 									},
+									Env: &corev1.EnvVarArray{
+										&corev1.EnvVarArgs{
+											Name:  pulumi.String("HOSTNAME"),
+											Value: pulumi.String(""),
+										},
+									},
 									Ports: &corev1.ContainerPortArray{
 										&corev1.ContainerPortArgs{
 											Name:          pulumi.String("http"),
 											Protocol:      pulumi.String("TCP"),
 											ContainerPort: pulumi.Int(config.RequireInt("port")),
 										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("sync-tcp"),
+											Protocol:      pulumi.String("TCP"),
+											ContainerPort: pulumi.Int(22000),
+										},
+										&corev1.ContainerPortArgs{
+											Name:          pulumi.String("sync-udp"),
+											Protocol:      pulumi.String("UDP"),
+											ContainerPort: pulumi.Int(22000),
+										},
 									},
 									VolumeMounts: &corev1.VolumeMountArray{
 										&corev1.VolumeMountArgs{
-											Name:      pulumi.String("sabnzbd-config-pv"),
+											Name:      pulumi.String("syncthing-config-pv"),
 											MountPath: pulumi.String("/config"),
 										},
 										&corev1.VolumeMountArgs{
-											Name:      pulumi.String("sabnzbd-data-pv"),
-											MountPath: pulumi.String("/data"),
+											Name:      pulumi.String("syncthing-sync-pv"),
+											MountPath: pulumi.String("/mnt/sync"),
 										},
 									},
 								},
 							},
 							Volumes: &corev1.VolumeArray{
 								&corev1.VolumeArgs{
-									Name: pulumi.String("sabnzbd-config-pv"),
+									Name: pulumi.String("syncthing-config-pv"),
 									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs{
 										ClaimName: configVolumeClaim.Metadata.Name().Elem(),
 									},
 								},
 								&corev1.VolumeArgs{
-									Name: pulumi.String("sabnzbd-data-pv"),
-									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs {
-										ClaimName: dataVolumeClaim.Metadata.Name().Elem(),
+									Name: pulumi.String("syncthing-sync-pv"),
+									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs{
+										ClaimName: syncVolumeClaim.Metadata.Name().Elem(),
 									},
 								},
 							},
@@ -164,7 +180,7 @@ func main() {
 
 		service, err := corev1.NewService(
 			ctx,
-			"sabnzbd-service",
+			"syncthing-service",
 			&corev1.ServiceArgs{
 				Metadata: &metav1.ObjectMetaArgs{
 					Namespace: namespace.Metadata.Name().Elem(),
@@ -173,7 +189,7 @@ func main() {
 					Type:            pulumi.String("LoadBalancer"),
 					SessionAffinity: pulumi.String("None"),
 					Selector: pulumi.StringMap{
-						"app": pulumi.String("sabnzbd"),
+						"app": pulumi.String("syncthing"),
 					},
 					Ports: &corev1.ServicePortArray{
 						&corev1.ServicePortArgs{
@@ -181,6 +197,18 @@ func main() {
 							Port:       pulumi.Int(config.RequireInt("port")),
 							TargetPort: pulumi.String("http"),
 							Protocol:   pulumi.String("TCP"),
+						},
+						&corev1.ServicePortArgs{
+							Name:       pulumi.String("sync-tcp"),
+							Port:       pulumi.Int(22000),
+							TargetPort: pulumi.String("sync-tcp"),
+							Protocol:   pulumi.String("TCP"),
+						},
+						&corev1.ServicePortArgs{
+							Name:       pulumi.String("sync-udp"),
+							Port:       pulumi.Int(22000),
+							TargetPort: pulumi.String("sync-udp"),
+							Protocol:   pulumi.String("UDP"),
 						},
 					},
 				},
@@ -194,12 +222,12 @@ func main() {
 
 		_, err = apiextensions.NewCustomResource(
 			ctx,
-			"sabnzbd-ingress-route",
+			"syncthing-ingress-route",
 			&apiextensions.CustomResourceArgs{
 				ApiVersion: pulumi.String("traefik.containo.us/v1alpha1"),
 				Kind:       pulumi.String("IngressRoute"),
 				Metadata: &metav1.ObjectMetaArgs{
-					Name:      pulumi.String("sabnzbd"),
+					Name:      pulumi.String("syncthing"),
 					Namespace: namespace.Metadata.Name().Elem(),
 				},
 				OtherFields: kubernetes.UntypedArgs{
@@ -234,6 +262,80 @@ func main() {
 			pulumi.DependsOn([]pulumi.Resource{
 				certificate,
 			}),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		_, err = apiextensions.NewCustomResource(
+			ctx,
+			"syncthing-tcp-ingress-route",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("traefik.containo.us/v1alpha1"),
+				Kind:       pulumi.String("IngressRouteTCP"),
+				Metadata: &metav1.ObjectMetaArgs{
+					Name:      pulumi.String("syncthing-sync-tcp"),
+					Namespace: namespace.Metadata.Name().Elem(),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": kubernetes.UntypedArgs{
+						"entryPoints": pulumi.StringArray{
+							pulumi.String("syncthing-tcp"),
+						},
+						"routes": []kubernetes.UntypedArgs{
+							{
+								"match": pulumi.String("HostSNI(`*`)"),
+								"kind":  pulumi.String("Rule"),
+								"services": []kubernetes.UntypedArgs{
+									{
+										"name": service.Metadata.Name().Elem(),
+										"port": pulumi.Int(22000),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Parent(service),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		_, err = apiextensions.NewCustomResource(
+			ctx,
+			"syncthing-udp-ingress-route",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("traefik.containo.us/v1alpha1"),
+				Kind:       pulumi.String("IngressRouteUDP"),
+				Metadata: &metav1.ObjectMetaArgs{
+					Name:      pulumi.String("syncthing-sync-udp"),
+					Namespace: namespace.Metadata.Name().Elem(),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": kubernetes.UntypedArgs{
+						"entryPoints": pulumi.StringArray{
+							pulumi.String("syncthing-udp"),
+						},
+						"routes": []kubernetes.UntypedArgs{
+							{
+								"match": pulumi.String("HostSNI(`*`)"),
+								"kind":  pulumi.String("Rule"),
+								"services": []kubernetes.UntypedArgs{
+									{
+										"name": service.Metadata.Name().Elem(),
+										"port": pulumi.Int(22000),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Parent(service),
 		)
 
 		if err != nil {
