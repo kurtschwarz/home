@@ -24,8 +24,8 @@ I'll make a pretty diagram and or include some photos at some point
 
 We've recently upgraded from 1000 Mbps cable internet to 8 Gbps fiber. We're slowing upgrading our networking hardware to 10GbE to get the most out of it.
 
- - 1x [Ubiquiti Switch 24](https://store.ui.com/collections/unifi-network-switching/products/usw-24)
  - 1x [Ubiquiti Dream Machine Special Edition](https://store.ui.com/collections/unifi-network-unifi-os-consoles/products/dream-machine-se)
+ - 1x [Ubiquiti Switch 24 POE](https://store.ui.com/collections/unifi-network-switching/products/usw-24-poe)
  - 2x [Ubiquiti U6 Lite Access Point](https://store.ui.com/collections/unifi-network-wireless/products/u6-lite-us)
  - 1x [Ubiquiti AC Mesh Pro Access Point](https://store.ui.com/collections/unifi-network-wireless/products/unifi-ac-mesh-pro-ap)
  - 1x [TRENDnet 24-Port Keystone Shielded 1U Patch Panel](https://www.trendnet.com/products/patch-panel/24-Port-Blank-Keystone-Shielded-1U-Patch-Panel-TC-KP24S)
@@ -34,13 +34,68 @@ We've recently upgraded from 1000 Mbps cable internet to 8 Gbps fiber. We're slo
 ### Servers
 
  - 1x [Dell PowerEdge R240](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r240/overview)
-    - PERC H330
-      - 8TB WD Red Plus NAS 3.5" Drive
-      - 8TB WD Red Plus NAS 3.5" Drive
-      - 8TB WD Red Plus NAS 3.5" Drive
+    - 1x PERC H330
+      - 4x 8TB WD Red Plus NAS 3.5" Drive (32TB Total)
  - 1x [Dell PowerEdge R620](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r620/overview)
-    - PERC H710 (IT Mode)
+    - 2x Intel(R) Xeon(R) CPU E5-2620 @ 2.00GHz
+    - 6x 16GB DIMM DDR3 Synchronous Registered (Buffered) 1333 MHz (96GB Total)
+    - 1x NVIDIA Quadro M20004GB GDDR5 GPU
+    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
+      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
+    - 1x PERC H710 (Flashed IT Mode)
+      - 1x 1GB Crucial MX500 2.5" SSD (Longhorn Disk)
  - 1x [Dell PowerEdge R430](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r430/overview)
-    - PERC H730 (IT Mode)
+    - 2x Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
+    - 2x 8GB DIMM DDR4 Synchronous Registered (Buffered) 2133 MHz (16GB Total)
+    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
+      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
+    - 1x PERC H730 Mini (Flashed IT Mode)
+      - 1x 1TB Crucial MX500 2.5" SSD (Longhorn Disk)
  - 1x [Dell PowerEdge R330](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r330/overview)
-    - PERC H330 (IT Mode)
+    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
+      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
+    - 1x PERC H330 (Flashed IT Mode)
+      - 1x 1TB Crucial MX500 2.5" SSD (Longhorn Disk)
+      - 6x 2TB Crucial MX500 2.5" SSD (12TB Total)
+
+## Kubernetes
+
+I'm using [k3s](https://k3s.io) as my Kubernetes flavour. It was super easy to get up and running and is much less resource heavy then other options. I had previously tried to use [microk8s](https://microk8s.io) and ended up with a unrecoverable cluster failure.
+
+### Setting up K3s
+
+```
+curl -sfL https://get.k3s.io | sh -s - server \
+  --cluster-init \
+  --cluster-cidr 10.34.0.0/16 \
+  --service-cidr 10.35.0.0/16 \
+  --cluster-dns 10.35.5.5 \
+  --write-kubeconfig-mode 644 \
+  --bind-address 0.0.0.0 \
+  --advertise-address 10.33.0.1 \
+  --disable traefik \
+  --disable servicelb \
+  --disable local-storage \
+  --flannel-backend=host-gw
+```
+
+## Networking
+
+### Layout
+
+| CIDR          | Description                 |
+|---------------|-----------------------------|
+| `10.33.0.0/12` | UniFi VLAN                 |
+| `10.34.0.0/16` | K3s Pods                   |
+| `10.35.0.0/16` | K3s Services               |
+| `10.36.0.0/16` | MetalLB External Addresses |
+
+## Deployment Order
+
+```
+just deploy system/metal-lb
+just deploy system/twingate
+just deploy system/traefik
+just deploy system/cert-manager
+just deploy system/longhorn
+```
