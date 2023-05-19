@@ -1,2 +1,2 @@
 config:
-  
+  kubernetes:context: k3s

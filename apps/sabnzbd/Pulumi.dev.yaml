@@ -3,3 +3,4 @@ config:
   sabnzbd:replicas: 1
   sabnzbd:port: 8080
   sabnzbd:domain: sabnzbd.kurtina.ca
+  kubernetes:context: k3s

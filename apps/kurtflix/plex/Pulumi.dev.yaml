@@ -1,10 +1,11 @@
 config:
+  kubernetes:context: k3s
   plex:claimToken:
-    secure: AAABABYpVxOEF7KTnz+aQFyy08QZCGd/ZObnF0odmRu/ars1gmheN5V+ooZ+5M6W6P6zhPdKXi+W8w==
-  plex:configNfsHost: 192.168.86.8
-  plex:configNfsPath: /mnt/user/appdata/plex-new
-  plex:image: docker.io/plexinc/pms-docker:1.31.2.6810-a607d384f@sha256:3f37fedf40656613b992149673adcdae93bcde57b57b9d58de27195e62cf1160
-  plex:mediaNfsHost: 192.168.86.8
-  plex:mediaNfsPath: /mnt/user/media/Plex
-  plex:replicas: 1
+    secure: AAABAEkZgLeMckWs7B3spY/WjxEemn1kWTaxs0yOoG2Crgb22e4N4PTPgobOk3hGGYruiqpi58x0bw==
+  plex:configNfsHost: 10.0.3.2
+  plex:configNfsPath: /mnt/user/appdata/plex
   plex:domain: kurtflix.ca
+  plex:image: docker.io/plexinc/pms-docker:1.31.2.6810-a607d384f@sha256:3f37fedf40656613b992149673adcdae93bcde57b57b9d58de27195e62cf1160
+  plex:mediaNfsHost: 10.0.3.2
+  plex:mediaNfsPath: /mnt/user/media/Plex
+  plex:replicas: "1"

@@ -2,6 +2,7 @@ config:
   tautulli:image: docker.io/tautulli/tautulli:v2.12.2@sha256:86251275020147a8c8d95dddc81b35f5cefa67b07ef8303d62b283dd4c41b6bf
   tautulli:replicas: 1
   tautulli:port: 8181
-  tautulli:configNfsHost: 192.168.86.8
+  tautulli:configNfsHost: 10.0.3.2
   tautulli:configNfsPath: /mnt/user/appdata/tautulli
   tautulli:domain: tautulli.kurtflix.ca
+  kubernetes:context: k3s

@@ -5,3 +5,4 @@ config:
   overseerr:port: 5055
   overseerr:configNfsHost: 192.168.86.8
   overseerr:configNfsPath: /mnt/user/appdata/overseerr
+  kubernetes:context: k3s

@@ -40,21 +40,39 @@ func main() {
 		}
 
 		var configVolumeClaim *corev1.PersistentVolumeClaim
-		if _, configVolumeClaim, err = infra.ProvisionLocalVolume(
+		if configVolumeClaim, err = corev1.NewPersistentVolumeClaim(
 			ctx,
-			namespace.Metadata.Name().Elem(),
-			"sabnzbd-config",
-			"/mnt/appdata/sabnzbd",
+			"sabnzbd-config-pvc",
+			&corev1.PersistentVolumeClaimArgs{
+				Metadata: &metav1.ObjectMetaArgs{
+					Name:      pulumi.String("sabnzbd-config-pvc"),
+					Namespace: namespace.Metadata.Name().Elem(),
+					Annotations: &pulumi.StringMap{
+						"pulumi.com/skipAwait": pulumi.String("true"),
+					},
+				},
+				Spec: &corev1.PersistentVolumeClaimSpecArgs{
+					StorageClassName: pulumi.String("longhorn"),
+					Resources: &corev1.ResourceRequirementsArgs{
+						Requests: pulumi.StringMap{
+							"storage": pulumi.String("20Gi"),
+						},
+					},
+					AccessModes: &pulumi.StringArray{
+						pulumi.String("ReadWriteOnce"),
+					},
+				},
+			},
 		); err != nil {
 			return err
 		}
 
-		var mediaVolumeClaim *corev1.PersistentVolumeClaim
-		if _, mediaVolumeClaim, err = infra.ProvisionLocalVolume(
+		var dataVolumeClaim *corev1.PersistentVolumeClaim
+		if _, dataVolumeClaim, err = infra.ProvisionLocalVolume(
 			ctx,
 			namespace.Metadata.Name().Elem(),
-			"sabnzbd-downloads",
-			"/mnt/media/Downloads",
+			"sabnzbd-data",
+			"/mnt/appdata/sabnzbd",
 		); err != nil {
 			return err
 		}
@@ -88,7 +106,7 @@ func main() {
 						},
 						Spec: &corev1.PodSpecArgs{
 							NodeSelector: pulumi.StringMap{
-								"kubernetes.io/hostname": pulumi.String("kurtina-k8s-worker-unraid"),
+								"kubernetes.io/hostname": pulumi.String("worker-02.k3s.kurtina.ca"),
 							},
 							Containers: &corev1.ContainerArray{
 								&corev1.ContainerArgs{
@@ -114,8 +132,8 @@ func main() {
 											MountPath: pulumi.String("/config"),
 										},
 										&corev1.VolumeMountArgs{
-											Name:      pulumi.String("sabnzbd-media-pv"),
-											MountPath: pulumi.String("/downloads"),
+											Name:      pulumi.String("sabnzbd-data-pv"),
+											MountPath: pulumi.String("/data"),
 										},
 									},
 								},
@@ -128,9 +146,9 @@ func main() {
 									},
 								},
 								&corev1.VolumeArgs{
-									Name: pulumi.String("sabnzbd-media-pv"),
-									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs{
-										ClaimName: mediaVolumeClaim.Metadata.Name().Elem(),
+									Name: pulumi.String("sabnzbd-data-pv"),
+									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs {
+										ClaimName: dataVolumeClaim.Metadata.Name().Elem(),
 									},
 								},
 							},
