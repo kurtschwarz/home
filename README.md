@@ -22,14 +22,12 @@ I'll make a pretty diagram and or include some photos at some point
 
 ### Networking
 
-We've recently upgraded from 1000 Mbps cable internet to 8 Gbps fiber. We're slowing upgrading our networking hardware to 10GbE to get the most out of it.
-
  - 1x [Ubiquiti Dream Machine Special Edition](https://store.ui.com/collections/unifi-network-unifi-os-consoles/products/dream-machine-se)
  - 1x [Ubiquiti Switch 24 POE](https://store.ui.com/collections/unifi-network-switching/products/usw-24-poe)
  - 2x [Ubiquiti U6 Lite Access Point](https://store.ui.com/collections/unifi-network-wireless/products/u6-lite-us)
  - 1x [Ubiquiti AC Mesh Pro Access Point](https://store.ui.com/collections/unifi-network-wireless/products/unifi-ac-mesh-pro-ap)
  - 1x [TRENDnet 24-Port Keystone Shielded 1U Patch Panel](https://www.trendnet.com/products/patch-panel/24-Port-Blank-Keystone-Shielded-1U-Patch-Panel-TC-KP24S)
- - 1x [TRENDnet 10-Port Gigabit POE+ Switch](https://www.trendnet.com/products/product-detail?prod=190_TPE-1020WS)
+ - ~~1x [TRENDnet 10-Port Gigabit POE+ Switch](https://www.trendnet.com/products/product-detail?prod=190_TPE-1020WS)~~ Replaced by Ubiquiti Switch 24
 
 ### Servers
 
