@@ -7,7 +7,10 @@ require (
 	github.com/pulumi/pulumi/sdk/v3 v3.57.1
 )
 
-require github.com/bmatcuk/doublestar/v4 v4.6.0
+require (
+	github.com/bmatcuk/doublestar/v4 v4.6.0
+	github.com/dustin/go-humanize v1.0.1
+)
 
 require (
 	github.com/Microsoft/go-winio v0.5.2 // indirect

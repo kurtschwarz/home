@@ -44,29 +44,14 @@ func main() {
 			return err
 		}
 
-		var configVolumeClaim *corev1.PersistentVolumeClaim
-		if configVolumeClaim, err = corev1.NewPersistentVolumeClaim(
+		var configVolume *infra.LonghornVolume
+		if configVolume, err = infra.NewLonghornVolume(
 			ctx,
-			"plex-config-pvc",
-			&corev1.PersistentVolumeClaimArgs{
-				Metadata: &metav1.ObjectMetaArgs{
-					Name:      pulumi.String("plex-config-pvc"),
-					Namespace: namespace,
-					Annotations: &pulumi.StringMap{
-						"pulumi.com/skipAwait": pulumi.String("true"),
-					},
-				},
-				Spec: &corev1.PersistentVolumeClaimSpecArgs{
-					StorageClassName: pulumi.String("longhorn"),
-					Resources: &corev1.ResourceRequirementsArgs{
-						Requests: pulumi.StringMap{
-							"storage": pulumi.String("20Gi"),
-						},
-					},
-					AccessModes: &pulumi.StringArray{
-						pulumi.String("ReadWriteOnce"),
-					},
-				},
+			"plex-config",
+			&infra.LonghornVolumeArgs{
+				Size:       pulumi.String("10Gi"),
+				AccessMode: infra.ReadWriteOnce,
+				Namespace:  namespace,
 			},
 		); err != nil {
 			return err
@@ -111,11 +96,11 @@ func main() {
 										InitialDelaySeconds: pulumi.Int(20),
 										PeriodSeconds:       pulumi.Int(15),
 									},
-									Resources: &corev1.ResourceRequirementsArgs{
-										Limits: pulumi.StringMap{
-											"nvidia.com/gpu": pulumi.String("1"),
-										},
-									},
+									// Resources: &corev1.ResourceRequirementsArgs{
+									// 	Limits: pulumi.StringMap{
+									// 		"nvidia.com/gpu": pulumi.String("1"),
+									// 	},
+									// },
 									Ports: &corev1.ContainerPortArray{
 										&corev1.ContainerPortArgs{
 											Name:          pulumi.String("http"),
@@ -163,16 +148,16 @@ func main() {
 											ContainerPort: pulumi.Int(32414),
 										},
 									},
-									Env: &corev1.EnvVarArray{
-										&corev1.EnvVarArgs{
-											Name:  pulumi.String("NVIDIA_VISIBLE_DEVICES"),
-											Value: pulumi.String("all"),
-										},
-										&corev1.EnvVarArgs{
-											Name:  pulumi.String("NVIDIA_DRIVER_CAPABILITIES"),
-											Value: pulumi.String("compute,video,utility"),
-										},
-									},
+									// Env: &corev1.EnvVarArray{
+									// 	&corev1.EnvVarArgs{
+									// 		Name:  pulumi.String("NVIDIA_VISIBLE_DEVICES"),
+									// 		Value: pulumi.String("all"),
+									// 	},
+									// 	&corev1.EnvVarArgs{
+									// 		Name:  pulumi.String("NVIDIA_DRIVER_CAPABILITIES"),
+									// 		Value: pulumi.String("compute,video,utility"),
+									// 	},
+									// },
 									EnvFrom: &corev1.EnvFromSourceArray{
 										&corev1.EnvFromSourceArgs{
 											SecretRef: &corev1.SecretEnvSourceArgs{
@@ -196,7 +181,7 @@ func main() {
 								&corev1.VolumeArgs{
 									Name: pulumi.String("plex-config-volume"),
 									PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSourceArgs{
-										ClaimName: configVolumeClaim.Metadata.Name().Elem(),
+										ClaimName: configVolume.PersistentVolumeClaim.Metadata.Name().Elem(),
 									},
 								},
 								&corev1.VolumeArgs{
@@ -212,6 +197,9 @@ func main() {
 					},
 				},
 			},
+			pulumi.DependsOn([]pulumi.Resource{
+				configVolume,
+			}),
 		)
 
 		if err != nil {

@@ -7,8 +7,9 @@ import (
 )
 
 func main() {
-	pulumi.Run(func(ctx *pulumi.Context) error {
-		namespace, err := corev1.NewNamespace(
+	pulumi.Run(func(ctx *pulumi.Context) (err error) {
+		var namespace *corev1.Namespace
+		if namespace, err = corev1.NewNamespace(
 			ctx,
 			"kurtflix-namespace",
 			&corev1.NamespaceArgs{
@@ -16,9 +17,7 @@ func main() {
 					Name: pulumi.String("kurtflix"),
 				},
 			},
-		)
-
-		if err != nil {
+		); err != nil {
 			return err
 		}
 

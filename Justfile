@@ -3,6 +3,9 @@ set dotenv-load := true
 
 pulumi := "pulumi logout && pulumi login && pulumi"
 
+refresh TARGET:
+  pulumi --cwd {{TARGET}} refresh --stack dev
+
 preview TARGET:
   pulumi --cwd {{TARGET}} preview --stack dev --refresh
 
