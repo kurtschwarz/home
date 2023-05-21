@@ -49,7 +49,7 @@ func main() {
 			ctx,
 			"plex-config",
 			&infra.LonghornVolumeArgs{
-				Size:       pulumi.String("10Gi"),
+				Size:       pulumi.String("30Gi"),
 				AccessMode: infra.ReadWriteOnce,
 				Namespace:  namespace,
 			},
