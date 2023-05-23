@@ -18,5 +18,5 @@ config:
     }
   cloudflareDDNS:image: docker.io/library/golang:1.20.4-alpine3.18@sha256:0a03b591c358a0bb02e39b93c30e955358dadd18dc507087a3b7f3912c17fe13
   cloudflareDDNS:namespace: cloudflare-ddns
-  cloudflareDDNS:schedule: "*/3 * * * *"
+  cloudflareDDNS:schedule: "*/5 * * * *"
   kubernetes:context: k3s
