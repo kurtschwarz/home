@@ -1,0 +1,22 @@
+config:
+  cloudflareDDNS:cloudflareAPIToken:
+    secure: AAABAMu3/ynjJ2Xo4+PQ/tbSyquqauoJhuZ/7crxKB8QmjLajjLT+tbIkvMhrcPTE57xybsroQ/cOVT7t3PfVpWQwYQwrdEn
+  cloudflareDDNS:ddns.json: |
+    {
+      "zones": {
+        "def7128762575afd00d6f1d500059ca9": {
+          "records": [
+            "ddns.kurtina.ca"
+          ]
+        },
+        "7e693a9a32b2bdd674422890830f4d0a": {
+          "records": [
+            "ddns.kurtflix.ca"
+          ]
+        }
+      }
+    }
+  cloudflareDDNS:image: docker.io/library/golang:1.20.4-alpine3.18@sha256:0a03b591c358a0bb02e39b93c30e955358dadd18dc507087a3b7f3912c17fe13
+  cloudflareDDNS:namespace: cloudflare-ddns
+  cloudflareDDNS:schedule: "*/3 * * * *"
+  kubernetes:context: k3s
