@@ -1,0 +1,20 @@
+config:
+  kubernetes:context: k3s
+  unpoller:image: ghcr.io/unpoller/unpoller:v2.7.13@sha256:5f1403480ba5c6f82eaca5962205bc917336cf1a500ed354c91ed1882bdd9df4
+  unpoller:namespace: monitoring
+  unpoller:replicas: "1"
+  unpoller:config:
+    UP_UNIFI_DYNAMIC: 'false'
+    UP_INFLUXDB_DISABLE: 'true'
+    UP_PROMETHEUS_DISABLE: 'false'
+    UP_PROMETHEUS_NAMESPACE: 'unifipoller'
+    UP_PROMETHEUS_HTTP_LISTEN: '0.0.0.0:9130'
+    UP_PROMETHEUS_REPORT_ERRORS: 'false'
+    UP_PROMETHEUS_BUFFER: '50'
+  unpoller:secrets:
+    UP_UNIFI_CONTROLLER_0_PASS:
+      secure: AAABAAyFRFT1DdEN1Vfg38FskLbHMyRDQ2tGa+MwAQ3gQtJXf3aABRDn2S75WEgqJF68bpjSr1cJcPirucG9R27D+XvdQB7Tf4k7EM9eY2OP3m1l+LOqKhwoB6NN7e4Y
+    UP_UNIFI_CONTROLLER_0_URL:
+      secure: AAABACG8VyrxlYGLk5xsHoPT9a+w4sG6vOLEotS5wZTnqu2FXdAAqQey+xwyqEul
+    UP_UNIFI_CONTROLLER_0_USER:
+      secure: AAABAFe5W2PEYjKACKoZgeiJKf6oghQIpZSD/6MVMHfUqfsVRkF0ig==
