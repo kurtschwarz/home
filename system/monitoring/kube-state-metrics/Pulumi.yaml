@@ -1,0 +1,2 @@
+name: homelab-system-monitoring-kube-state-metrics
+runtime: go
