@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kurtschwarz/home/system/monitoring/prometheus/resources"
+	"github.com/kurtschwarz/home/system/monitoring/prometheus/components"
 	pulumi "github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	config "github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
@@ -11,11 +11,11 @@ func main() {
 		config := config.New(ctx, "prometheus")
 		namespace := config.Require("namespace")
 
-		var operator *resources.PrometheusOperator
-		if operator, err = resources.NewPrometheusOperator(
+		var operator *components.PrometheusOperator
+		if operator, err = components.NewPrometheusOperator(
 			ctx,
 			"prometheus-operator",
-			&resources.PrometheusOperatorArgs{
+			&components.PrometheusOperatorArgs{
 				Version:   config.Require("operatorVersion"),
 				Namespace: namespace,
 			},
@@ -23,10 +23,10 @@ func main() {
 			return err
 		}
 
-		if _, err = resources.NewPrometheus(
+		if _, err = components.NewPrometheus(
 			ctx,
 			"prometheus",
-			&resources.PrometheusArgs{
+			&components.PrometheusArgs{
 				Namespace: pulumi.String(namespace),
 			},
 			pulumi.Parent(operator),

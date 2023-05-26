@@ -1,4 +1,4 @@
-package resources
+package components
 
 import (
 	"github.com/pulumi/pulumi-kubernetes/sdk/v3/go/kubernetes"
@@ -160,6 +160,16 @@ func NewPrometheus(
 			OtherFields: kubernetes.UntypedArgs{
 				"spec": kubernetes.UntypedArgs{
 					"serviceAccountName": resource.ServiceAccount.Metadata.Name(),
+					"serviceMonitorSelector": kubernetes.UntypedArgs{
+						"matchLabels": pulumi.StringMap{
+							"app.kubernetes.io/component": pulumi.String("exporter"),
+						},
+					},
+					"serviceMonitorNamespaceSelector": kubernetes.UntypedArgs{
+						"matchNames": pulumi.StringArray{
+							args.Namespace,
+						},
+					},
 				},
 			},
 		},
