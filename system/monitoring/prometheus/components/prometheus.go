@@ -194,7 +194,7 @@ func NewPrometheus(
 					&corev1.ServicePortArgs{
 						Name:       pulumi.String("web"),
 						NodePort:   pulumi.Int(30900),
-						Port:       pulumi.Int(9090),
+						Port:       pulumi.Int(80),
 						Protocol:   pulumi.String("TCP"),
 						TargetPort: pulumi.String("web"),
 					},
