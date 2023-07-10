@@ -1,9 +1,0 @@
-config:
-  kubernetes:context: k3s
-  ntfy:image: docker.io/binwiederhier/ntfy:v2.5.0@sha256:64f9274078bc2544f211bf44fe5e1610ce582864a84214394470e46e852b7034
-  ntfy:repliacs: 1
-  ntfy:domain: ntfy.kurtina.ca
-  ntfy:server.yml: |
-    base-url: "https://ntfy.kurtina.ca"
-    cache-file: "/var/cache/ntfy/cache.db"
-    attachment-cache-dir: "/var/cache/ntfy/attachments"
