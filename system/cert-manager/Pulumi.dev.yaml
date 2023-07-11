@@ -1,4 +1,6 @@
 config:
-  certManager:version: v1.11.0
   certManager:acmeEmail: kurt@unkn.co
+  certManager:cloudflareToken:
+    secure: AAABAEtz+rena1z81xf7H3HeEpz3jEHh7vPpzluU3QXVVk2aXzPEW+EkG3IFYbUWf2AnR+P/Ix7p39gkYdsLoCXUrlV6O7hs
+  certManager:version: v1.11.0
   kubernetes:context: k3s
