@@ -168,8 +168,10 @@ func main() {
 					Name:      pulumi.String("traefik"),
 				},
 				Spec: &corev1.ServiceSpecArgs{
-					Type:           pulumi.String("LoadBalancer"),
-					LoadBalancerIP: pulumi.String(config.Require("loadBalancerIP")),
+					Type:                  pulumi.String("LoadBalancer"),
+					LoadBalancerIP:        pulumi.String(config.Require("loadBalancerIP")),
+					ExternalTrafficPolicy: pulumi.String("Local"),
+					InternalTrafficPolicy: pulumi.String("Cluster"),
 					Ports: &corev1.ServicePortArray{
 						&corev1.ServicePortArgs{
 							Port:       pulumi.Int(80),
