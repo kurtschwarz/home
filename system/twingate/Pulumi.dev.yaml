@@ -1,6 +1,6 @@
 config:
   kubernetes:context: k3s
-  twingate:image: twingate/connector:1.54.0@sha256:b7dc750e14ff77a7db29631c5055c79cdc16c21fe84cd8f8d260a5fa45d370b9
+  twingate:image: twingate/connector:1.59.0@sha256:125ab5fd68d9394e10766f9a168969529881cd1386e79c193d4c223b0beee7e0
   twingate:tenantUrl:
     secure: AAABAPemvQdGIUz5lRK5acyNEZnNwnfE8GFkC/+mUOEL/AvXtrTwAu+lnskkN8GK+cjN3C1cv+Vzb64=
   twingate:connectors:
