@@ -12,5 +12,8 @@ preview TARGET:
 deploy TARGET:
   pulumi --cwd {{TARGET}} up --stack dev --refresh
 
-destroy TARGET:
-  pulumi --cwd {{TARGET}} destroy --stack dev
+destroy TARGET *ARGS:
+  pulumi --cwd {{TARGET}} destroy --stack dev {{ARGS}}
+
+pulumi TARGET *ARGS:
+  pulumi --cwd {{TARGET}} {{ARGS}}
