@@ -1,0 +1,31 @@
+{
+  "name": "home",
+  "version": "1.0.0",
+  "description": "Megarepo for my personal [homelab](https://www.reddit.com/r/homelab/wiki/introduction/)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kurtschwarz/home.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kurtschwarz/home/issues"
+  },
+  "homepage": "https://github.com/kurtschwarz/home#readme",
+  "dependencies": {
+    "@pulumi/kubernetes": "^4.4.0",
+    "@pulumi/pulumi": "^3.88.1"
+  },
+  "devDependencies": {
+    "esno": "^0.17.0",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}
