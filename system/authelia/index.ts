@@ -2,6 +2,8 @@ import * as pulumi from '@pulumi/pulumi'
 import * as kube from '@pulumi/kubernetes'
 import { stringify } from 'yaml'
 
+import { AccessType, Ingress, IngressType } from '../../resources/Ingress'
+
 interface Output {
   namespace: pulumi.Output<string>
 }
@@ -117,7 +119,7 @@ export = async function (): Promise<Output> {
     },
   )
 
-  new kube.core.v1.Service(
+  const service = new kube.core.v1.Service(
     'authelia-service',
     {
       metadata: {
@@ -140,6 +142,21 @@ export = async function (): Promise<Output> {
         deployment,
       ],
     },
+  )
+
+  new Ingress(
+    'authelia',
+    {
+      type: IngressType.HTTP,
+      access: AccessType.Public,
+      namespace: namespace.metadata.name,
+      domain: 'auth.damnfine.dev',
+      serviceName: service.metadata.name,
+      servicePort: 9091,
+    },
+    {
+      parent: service,
+    }
   )
 
   return {

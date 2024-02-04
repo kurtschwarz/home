@@ -18,6 +18,7 @@ config:
       max_retries: 3
     session:
       name: authelia
+      domain: auth.damnfine.dev
       expiration: 1h
       inactivity: 5m
       remember_me_duration: 1M
