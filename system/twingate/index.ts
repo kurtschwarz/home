@@ -1,5 +1,6 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as kube from '@pulumi/kubernetes'
+
 import { TwingateConnector } from './components/TwingateConnector'
 
 interface Output {
@@ -7,13 +8,13 @@ interface Output {
 }
 
 export = async function (): Promise<Output> {
+  const config = new pulumi.Config('twingate')
   const namespace = new kube.core.v1.Namespace('twingate-namespace', {
     metadata: {
       name: 'twingate',
     },
   })
 
-  const config = new pulumi.Config('twingate')
   for (const connector of config.requireObject<{ name: string, accessToken: string, refreshToken: string }[]>('connectors')) {
     new TwingateConnector(
       `twingate-connector-${connector.name}`,
