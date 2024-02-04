@@ -1,19 +1,31 @@
-set shell := ["/usr/bin/env", "bash", "-c"]
+set shell := ["/usr/bin/env", "bash", "-sec"]
 set dotenv-load := true
 
-pulumi := "pulumi logout && pulumi login && pulumi"
+pulumi := `which pulumi`
 
-refresh TARGET:
+[private]
+init-pulumi:
+  #!/usr/bin/env bash
+  set -exuo pipefail
+
+  pulumi logout
+  pulumi login
+
+  if [[ ! $(pulumi whoami | grep "kurtschwarz") ]] ; then
+    exit 1
+  fi
+
+refresh TARGET: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} refresh --stack dev
 
-preview TARGET:
+preview TARGET: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} preview --stack dev --refresh --diff
 
-deploy TARGET:
+deploy TARGET: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} up --stack dev --refresh
 
-destroy TARGET *ARGS:
+destroy TARGET *ARGS: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} destroy --stack dev {{ARGS}}
 
-pulumi TARGET *ARGS:
+pulumi TARGET *ARGS: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} {{ARGS}}
