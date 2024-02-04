@@ -1,2 +1,6 @@
 name: homelab-system-twingate
-runtime: go
+main: index.ts
+runtime:
+  name: nodejs
+  options:
+    typescript: true
