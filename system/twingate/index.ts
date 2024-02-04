@@ -1,7 +1,7 @@
 import * as pulumi from '@pulumi/pulumi'
 import * as kube from '@pulumi/kubernetes'
 
-import { TwingateConnector } from './components/TwingateConnector'
+import { TwingateConnector } from './resources/connector'
 
 interface Output {
   namespace: pulumi.Output<string>
