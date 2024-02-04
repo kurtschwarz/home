@@ -13,6 +13,11 @@ config:
           "records": [
             "ddns.kurtflix.ca"
           ]
+        },
+        "0ef10992cc83f5ab43426902692deeaf": {
+          "records": [
+            "ddns.damnfine.dev"
+          ]
         }
       }
     }
