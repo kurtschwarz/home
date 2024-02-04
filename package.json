@@ -7,15 +7,14 @@
     "url": "git+https://github.com/kurtschwarz/home.git"
   },
   "dependencies": {
-    "@pulumi/kubernetes": "^4.4.0",
-    "@pulumi/pulumi": "^3.88.1",
+    "@pulumi/kubernetes": "^4.7.1",
+    "@pulumi/pulumi": "^3.104.2",
     "glob": "^10.3.10",
-    "pnpm": "^8.14.0",
+    "pnpm": "^8.15.1",
     "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "esno": "^0.17.0",
-    "prettier": "^3.0.3",
-    "typescript": "^5.2.2"
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
   }
 }
