@@ -19,7 +19,7 @@ export = async function (): Promise<Output> {
   new kube.yaml.ConfigFile(
     'traefik-crd',
     {
-      file: 'https://raw.githubusercontent.com/traefik/traefik/v2.9/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml',
+      file: 'https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml',
     },
   )
 
@@ -56,7 +56,7 @@ export = async function (): Promise<Output> {
           verbs: ['update'],
         },
         {
-          apiGroups: ['traefik.containo.us'],
+          apiGroups: ['traefik.io', 'traefik.containo.us'],
           resources: ['ingressroutes', 'ingressroutetcps', 'ingressrouteudps', 'middlewares', 'middlewaretcps', 'tlsoptions', 'tlsstores', 'traefikservices', 'serverstransports'],
           verbs: ['get', 'list', 'watch'],
         },
