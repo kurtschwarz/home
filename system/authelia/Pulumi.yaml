@@ -1,0 +1,6 @@
+name: homelab-system-authelia
+main: index.ts
+runtime:
+  name: nodejs
+  options:
+    typescript: true
