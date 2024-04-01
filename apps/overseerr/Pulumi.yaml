@@ -1,0 +1,6 @@
+name: homelab-apps-overseerr
+main: index.ts
+runtime:
+  name: nodejs
+  options:
+    typescript: true

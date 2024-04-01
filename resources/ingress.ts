@@ -57,9 +57,9 @@ export class Ingress extends pulumi.ComponentResource {
     )
 
     new kube.apiextensions.CustomResource(
-      `${this.name}-http-ingress-route`,
+      `${this.name}-route`,
       {
-        apiVersion: 'traefik.containo.us/v1alpha1',
+        apiVersion: 'traefik.io/v1alpha1',
         kind: 'IngressRoute',
         metadata: {
           name: `${this.name}-http`,
@@ -98,9 +98,9 @@ export class Ingress extends pulumi.ComponentResource {
 
   private _tcpIngressResources(): void {
     new kube.apiextensions.CustomResource(
-      `${this.name}-tcp-ingress-route`,
+      `${this.name}-route`,
       {
-        apiVersion: 'traefik.containo.us/v1alpha1',
+        apiVersion: 'traefik.io/v1alpha1',
         kind: 'IngressRouteTCP',
         metadata: {
           name: `${this.name}-tcp`,
@@ -111,7 +111,6 @@ export class Ingress extends pulumi.ComponentResource {
           routes: [
             {
               match: `HostSNI(\`*\`)`,
-              kind: 'Rule',
               services: [
                 {
                   name: this.args.serviceName,
@@ -130,9 +129,9 @@ export class Ingress extends pulumi.ComponentResource {
 
   private _udpIngressResources(): void {
     new kube.apiextensions.CustomResource(
-      `${this.name}-udp-ingress-route`,
+      `${this.name}-route`,
       {
-        apiVersion: 'traefik.containo.us/v1alpha1',
+        apiVersion: 'traefik.io/v1alpha1',
         kind: 'IngressRouteUDP',
         metadata: {
           name: `${this.name}-udp`,
@@ -142,8 +141,6 @@ export class Ingress extends pulumi.ComponentResource {
           entryPoints: this.args.entryPoints,
           routes: [
             {
-              match: `HostSNI(\`*\`)`,
-              kind: 'Rule',
               services: [
                 {
                   name: this.args.serviceName,
