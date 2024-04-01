@@ -97,3 +97,14 @@ just deploy system/traefik
 just deploy system/cert-manager
 just deploy system/longhorn
 ```
+
+## Applications
+
+### Wishlist
+
+Here is a list of self-hosted applications I might add in the future:
+
+ - https://github.com/TomBursch/kitchenowl
+ - https://github.com/manyfold3d/manyfold
+ - https://github.com/danielbrendel/hortusfox-web
+ - https://github.com/Shelf-nu/shelf.nu
