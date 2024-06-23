@@ -10,7 +10,7 @@
     "@pulumi/kubernetes": "^4.13.1",
     "@pulumi/pulumi": "^3.121.0",
     "glob": "^10.4.2",
-    "pnpm": "^8.15.8",
+    "pnpm": "^9.4.0",
     "yaml": "^2.4.5"
   },
   "devDependencies": {
