@@ -19,7 +19,7 @@ export = async function (): Promise<Output> {
   new kube.yaml.ConfigFile(
     'traefik-crd',
     {
-      file: 'https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml',
+      file: 'https://raw.githubusercontent.com/traefik/traefik/v2.11/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml',
     },
   )
 

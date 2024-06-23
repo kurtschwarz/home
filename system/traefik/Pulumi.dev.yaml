@@ -1,5 +1,5 @@
 config:
-  traefik:image: docker.io/library/traefik:2.10.7@sha256:a6b19e415e41b0e48b5c81713f3a60693a38f292059bd7347eef78bc9ae8044a
+  traefik:image: docker.io/library/traefik:2.11.5@sha256:eff67fb6195d2a281cad0cdb59f6f42ea6f4b99934a97188e00751d549fa5222
   traefik:namespace: kube-system
   traefik:replicas: 1
   traefik:loadBalancerIP: 10.36.0.1
