@@ -4,103 +4,89 @@ Megarepo for my personal [homelab](https://www.reddit.com/r/homelab/wiki/introdu
 
 ## Hardware
 
-I'll make a pretty diagram and or include some photos at some point
-
-### Rack
-
- - 1x [StarTech.com 18U 19in Open Frame Server Rack](https://www.startech.com/en-ca/server-management/4postrack18u)
-
-### Power Management
-
- - 1x [Square D Home Electronics Protective Device 80 kA](https://www.se.com/ca/en/product/HEPD80C/spd%2C-hepd-type-1%2C-120-240-v%2C-1-ph%2C-3-wire%2C-80-ka%2C-consumer-packaging/?range=61969-square-d-hepd-home-electronics-protective-device&node=12368269215-hepd&selected-node-id=12368269215)
- - 2x [Leviton 20 Amp Hospital Grade Surge Outlet](https://www.leviton.com/en/products/t8380-w)
-   - Each outlet has a dedicated 20A breaker, this was done for a future deployment of multiple UPS each would get their own outlet / breaker
- - 1x [APC AP7801 Metered Rack PDU](https://www.apc.com/shop/ca/en/products/Rack-PDU-Metered-1U-20A-120V-8-5-20/P-AP7801)
-   - Version 1 of the power managment in the rack, UPS coming soon
- - 1x [StarTech.com 1U 19in Metal Rackmount Cable Management Panel](https://www.startech.com/en-ca/server-management/cablmanager2)
-   - This is used to tidy up the power cables coming to the bottom of the rack into the APC AP7801 PDU
-
 ### Networking
 
- - 1x [Ubiquiti Dream Machine Special Edition](https://store.ui.com/collections/unifi-network-unifi-os-consoles/products/dream-machine-se)
- - 1x [Ubiquiti Switch 24 POE](https://store.ui.com/collections/unifi-network-switching/products/usw-24-poe)
- - 2x [Ubiquiti U6 Lite Access Point](https://store.ui.com/collections/unifi-network-wireless/products/u6-lite-us)
- - 1x [Ubiquiti AC Mesh Pro Access Point](https://store.ui.com/collections/unifi-network-wireless/products/unifi-ac-mesh-pro-ap)
- - 1x [TRENDnet 24-Port Keystone Shielded 1U Patch Panel](https://www.trendnet.com/products/patch-panel/24-Port-Blank-Keystone-Shielded-1U-Patch-Panel-TC-KP24S)
- - ~~1x [TRENDnet 10-Port Gigabit POE+ Switch](https://www.trendnet.com/products/product-detail?prod=190_TPE-1020WS)~~ Replaced by Ubiquiti Switch 24
+ - [UniFi Dream Machine Special Edition (UDM-SE)](https://ca.store.ui.com/ca/en/category/all-cloud-gateways/products/udm-se)
+ - [UniFi 8-Port Aggregation Switch (USW-Aggregation)](https://ca.store.ui.com/ca/en/products/usw-aggregation)
+ - [UniFi 24-Port PoE Switch (USW-24-POE)](https://ca.store.ui.com/ca/en/products/usw-24-poe)
 
-### Servers
+### Mini 10" 8U Rack
 
- - 1x [Dell PowerEdge R240](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r240/overview)
-    - 1x PERC H330
-      - 4x 8TB WD Red Plus NAS 3.5" Drive (32TB Total)
- - 1x [Dell PowerEdge R620](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r620/overview)
-    - 2x Intel(R) Xeon(R) CPU E5-2620 @ 2.00GHz
-    - 6x 16GB DIMM DDR3 Synchronous Registered (Buffered) 1333 MHz (96GB Total)
-    - 1x NVIDIA Quadro M20004GB GDDR5 GPU
-    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
-      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
-    - 1x PERC H710 (Flashed IT Mode)
-      - 1x 1GB Crucial MX500 2.5" SSD (Longhorn Disk)
- - 1x [Dell PowerEdge R430](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r430/overview)
-    - 2x Intel(R) Xeon(R) CPU E5-2660 v4 @ 2.00GHz
-    - 2x 8GB DIMM DDR4 Synchronous Registered (Buffered) 2133 MHz (16GB Total)
-    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
-      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
-    - 1x PERC H730 Mini (Flashed IT Mode)
-      - 1x 1TB Crucial MX500 2.5" SSD (Longhorn Disk)
- - 1x [Dell PowerEdge R330](https://www.dell.com/support/home/en-ca/product-support/product/poweredge-r330/overview)
-    - 1x GLOTRENDS M.2 PCIe NVMe Adapter
-      - 1x 250GB Samsung 970 EVO Plus NVMe M.2 Internal SSD (Boot Drive)
-    - 1x PERC H330 (Flashed IT Mode)
-      - 1x 1TB Crucial MX500 2.5" SSD (Longhorn Disk)
-      - 6x 2TB Crucial MX500 2.5" SSD (12TB Total)
+#### 10" 8U Rack
 
-## Kubernetes
+ - Custom built using 2020 aluminum extrusions and 3D printed components
+    - 2x [2020 Carrying Handles](https://makerworld.com/en/models/160002-voron-2-4-trident-carrying-handle), printed with [Fiberon PETG-rCF08](https://ca.polymaker.com/products/fiberon-petg-rcf08)
+    - 8x [2020 Corner Brackets](https://makerworld.com/en/models/694515-2020-corner-bracket-m5-version), printed with [Fiberon PETG-rCF08](https://ca.polymaker.com/products/fiberon-petg-rcf08)
+    - 4x [2020 Leveler Pads](https://makerworld.com/en/models/1055083-2020-leveler-pad-for-aluminum-extrusions), printed with [Fiberon PETG-rCF08](https://ca.polymaker.com/products/fiberon-petg-rcf08)
+    - 1x [1U 2.5"x4 Hot Swap Bays](https://makerworld.com/en/models/1648104-10-inch-rack-1u-4x-2-5-inch-hdd-ssd-hot-swap), printed with [Fiberon PA6-CF20](https://ca.polymaker.com/products/fiberon-pa6-cf20)
+    - 3x [1U 3.5"x2 Hot Swap Bays](https://makerworld.com/en/models/1400538-10-inch-rack-1u-2-x-3-5-inch-hdd-hot-swap), printed with [Fiberon PA6-CF20](https://ca.polymaker.com/products/fiberon-pa6-cf20)
+    - 1x [1U Power Distribution Unit](makerworld.com/en/models/1691049-10-rack-power-distribution-unit), printed with [Fiberon PA6-CF20](https://ca.polymaker.com/products/fiberon-pa6-cf20)
 
-I'm using [k3s](https://k3s.io) as my Kubernetes flavour. It was super easy to get up and running and is much less resource heavy then other options. I had previously tried to use [microk8s](https://microk8s.io) and ended up with a unrecoverable cluster failure.
+#### Storage
 
-### Setting up K3s
+Current total raw storage capacity is just 79 TB. This will be expanded once the AI / LLM hyper train derails and storage becomes reasonably priced again.
 
-```
-curl -sfL https://get.k3s.io | sh -s - server \
-  --cluster-init \
-  --cluster-cidr 10.34.0.0/16 \
-  --service-cidr 10.35.0.0/16 \
-  --cluster-dns 10.35.5.5 \
-  --write-kubeconfig-mode 644 \
-  --bind-address 0.0.0.0 \
-  --advertise-address 10.33.0.1 \
-  --disable traefik \
-  --disable servicelb \
-  --disable local-storage \
-  --flannel-backend=host-gw
-```
+ - 7x 1TB Samsung 990 PRO NVMe SSDs
+ - 4x 2TB Crucial MX500 3D NAND SATA SSDs
+ - 6x 16TB WD Ultrastar DC HC550 SATA 3.5" HDDs
+
+#### Compute
+
+ - 3x Cluster Server
+    - RaspberryPi 5
+      - Broadcom BCM2712 ARM CPU
+      - 8 GB Memory
+      - [52Pi M.2 NVMe and 2.5 GbE HAT](https://52pi.com/products/52pi-w01-u2500-usb-2-5g-ethernet-nvme-for-raspberry-pi-5)
+        - 1TB Samsung 990 PRO NVMe SSD
+    - RaspberryPi 5
+      - Broadcom BCM2712 ARM CPU
+      - 8 GB Memory
+      - [52Pi M.2 NVMe and 2.5 GbE HAT](https://52pi.com/products/52pi-w01-u2500-usb-2-5g-ethernet-nvme-for-raspberry-pi-5)
+        - 1TB Samsung 990 PRO NVMe SSD
+    - RaspberryPi 5
+      - Broadcom BCM2712 ARM CPU
+      - 8 GB Memory
+      - [52Pi M.2 NVMe and 2.5 GbE HAT](https://52pi.com/products/52pi-w01-u2500-usb-2-5g-ethernet-nvme-for-raspberry-pi-5)
+        - 1TB Samsung 990 PRO NVMe SSD
+ - 2x Cluster Workers/Storage
+    - [Topton N18 NAS Motherboard](https://www.aliexpress.com/item/1005005347552418.html) &mdash; Bulk 2.5" SSD Storage
+      - Intel N150 x86 CPU
+      - 32 GB DDR5 Memory
+      - 2x 1TB Samsung 990 PRO NVMe SSD
+      - 4x 2TB Crucial MX500 3D NAND SATA SSDs
+    - [Topton N18 NAS Motherboard](https://www.aliexpress.com/item/1005005347552418.html) &mdash;  Bulk 3.5" HDD Storage
+      - Intel N150 x86 CPU
+      - 32 GB DDR5 Memory
+      - 2x 1TB Samsung 990 PRO NVMe SSD
+      - 6x 16TB WD Ultrastar DC HC550 SATA 3.5" HDDs
+
+### Standard 19" 18U Rack (Deprecated)
+
+ - @TODO: backfill 19" rack details
 
 ## Networking
 
 ### Layout
 
-| CIDR          | Description                 |
-|---------------|-----------------------------|
-| `10.33.0.0/12` | UniFi VLAN                 |
-| `10.34.0.0/16` | K3s Pods                   |
-| `10.35.0.0/16` | K3s Services               |
-| `10.36.0.0/16` | MetalLB External Addresses |
+| CIDR           | Description                 |
+|----------------|-----------------------------|
+| `10.32.0.0/14` | UniFi Network VLAN          |
+| `10.33.0.0/16` | Cluster Pods                |
+| `10.34.0.0/16` | Cluster Services            |
+| `10.35.0.0/16` | Cluster External Addresses  |
 
-## Deployment Order
+### Static IPs
 
-```
-just deploy system/metal-lb
-just deploy system/twingate
-just deploy system/traefik
-just deploy system/cert-manager
-just deploy system/longhorn
-```
+| CIDR           | Description                 |
+|----------------|-----------------------------|
+| `10.32.0.1`    | VLAN Gateway                |
+| `10.32.10.1`   | Cluster Server Node         |
+| `10.32.10.2`   | Cluster Server Node         |
+| `10.32.10.3`   | Cluster Server Node         |
 
-## Applications
+---
 
-### Wishlist
+## Wishlist
 
 Here is a list of self-hosted applications I might add in the future:
 

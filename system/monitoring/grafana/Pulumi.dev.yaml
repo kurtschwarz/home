@@ -1,5 +1,0 @@
-config:
-  kubernetes:context: k3s
-  grafana:namespace: monitoring
-  grafana:replicas: 1
-  grafana:image: grafana/grafana-oss:9.5.2@sha256:2aafd24a138277142a86b6ed43b7537e1ec8226478f5240c459e9330a3461cdb

@@ -1,3 +1,0 @@
-config:
-  kubernetes:context: k3s
-  cnpg:version: 1.20.1

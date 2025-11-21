@@ -1,5 +1,0 @@
-lutron_caseta:
-  - host: 10.0.14.82
-    ca_certs: /ssl/lutron/ca.crt
-    certfile: /ssl/lutron/client.crt
-    keyfile: /ssl/lutron/client.key

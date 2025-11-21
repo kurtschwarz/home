@@ -1,4 +1,0 @@
-config:
-  kubernetes:context: k3s
-  prometheus:namespace: monitoring
-  prometheus:operatorVersion: 0.65.1

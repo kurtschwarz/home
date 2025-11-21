@@ -1,9 +1,0 @@
-config:
-  kubernetes:context: k3s
-  plex:claimToken:
-    secure: AAABAEkZgLeMckWs7B3spY/WjxEemn1kWTaxs0yOoG2Crgb22e4N4PTPgobOk3hGGYruiqpi58x0bw==
-  plex:domain: kurtflix.ca
-  plex:image: docker.io/plexinc/pms-docker:1.32.1.6999-91e1e2e2c@sha256:3979ff57e6da699c094b377a771e392d2556640676c1fe6b290cec280cd169c1
-  plex:mediaNfsHost: 10.33.1.2
-  plex:mediaNfsPath: /mnt/user/media/Plex
-  plex:replicas: "1"
