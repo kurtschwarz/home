@@ -14,10 +14,10 @@ ansible-inventory := _ansible-docker + ' ansible-inventory'
 ansible-playbook := _ansible-docker + ' ansible-playbook'
 
 ansible *ARGS:
-  {{ansible}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+  {{ansible}} -i ./ansible/inventories/cluster/inventory.yaml {{ARGS}}
 
 inventory *ARGS='--list':
-  {{ansible-inventory}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+  {{ansible-inventory}} -i ./ansible/inventories/cluster/inventory.yaml {{ARGS}}
 
 playbook *ARGS:
-  {{ansible-playbook}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+  {{ansible-playbook}} -i ./ansible/inventories/cluster/inventory.yaml {{ARGS}}
