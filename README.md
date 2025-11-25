@@ -2,6 +2,13 @@
 
 Megarepo for my personal [homelab](https://www.reddit.com/r/homelab/wiki/introduction/)
 
+## Quick Start
+
+1. `git clone` this repository
+2. Install [`just`](https://just.systems/) and [`docker`](https://www.docker.com/products/docker-desktop/)
+3. Run `just docs`
+4. Open [http://localhost:3000/docs/](http://localhost:3000/docs/) in your preferred browser
+
 ## Hardware
 
 ### Networking

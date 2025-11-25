@@ -1,0 +1,15 @@
+services:
+  docusaurus:
+    build:
+      target: dev
+      context: ../../
+      dockerfile: ./docs/docusaurus/Dockerfile
+    volumes:
+      - ./docusaurus.config.ts:/workspace/docs/docusaurus/docusaurus.config.ts
+      - ./sidebars.ts:/workspace/docs/docusaurus/sidebars.ts
+      - ./src/:/workspace/docs/docusaurus/src/
+      - ./static/:/workspace/docs/docusaurus/static/
+      - ../content/:/workspace/docs/content/
+    ports:
+      - 127.0.0.1:3000:3000/tcp
+    restart: always

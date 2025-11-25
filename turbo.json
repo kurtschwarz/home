@@ -1,0 +1,45 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "dev": {
+      "dependsOn": [
+        "^build",
+        "^dev"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^lint"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "@kurtschwarz/homelab-docs#lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../content/**/*.mdx"
+      ],
+      "dependsOn": [
+        "^lint"
+      ]
+    },
+    "@kurtschwarz/homelab-docs#build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../content/**/*.mdx"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    }
+  },
+  "globalEnv": [
+    "BUILD_CONTEXT",
+    "BUILD_COMMIT"
+  ]
+}

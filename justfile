@@ -3,6 +3,9 @@ mod metal './metal/justfile'
 set shell := ["/usr/bin/env", "bash", "-sec"]
 set dotenv-load := true
 
+docker := `which docker`
+compose := docker + ' compose'
+
 pulumi := `which pulumi`
 
 [private]
@@ -31,3 +34,6 @@ destroy TARGET *ARGS: (init-pulumi)
 
 pulumi TARGET *ARGS: (init-pulumi)
   {{pulumi}} --cwd {{TARGET}} {{ARGS}}
+
+docs *ARGS:
+  {{ compose }} up docusaurus {{ARGS}}
