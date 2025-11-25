@@ -1,3 +1,5 @@
+mod metal './metal/justfile'
+
 set shell := ["/usr/bin/env", "bash", "-sec"]
 set dotenv-load := true
 

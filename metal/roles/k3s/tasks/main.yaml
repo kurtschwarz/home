@@ -1,0 +1,20 @@
+---
+
+- include_vars: "{{ k3s_node_role | lower }}.yaml"
+  tags:
+    - k3s
+
+- name: check if k3s is installed
+  ansible.builtin.command: which kubectl
+  register: k3s_install
+  changed_when: false
+  failed_when: false
+  tags:
+    - k3s
+
+- include_tasks: "{{ item }}"
+  with_first_found:
+    - "setup/{{ k3s_node_role | lower }}.yaml"
+  tags:
+    - k3s
+    - setup

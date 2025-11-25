@@ -1,0 +1,23 @@
+docker := `which docker`
+
+_ansible-image := '2.18.6@sha256:edba669e24f558c5c0e22c73d3a2c71dd77781176d84c0a247f44ebd66f6f643'
+_ansible-docker := (
+  docker + ' run -it --rm ' +
+  '-v ' + `pwd` + ':/apps ' +
+  '-v ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock:/tmp/ssh-agent.sock ' +
+  '-e SSH_AUTH_SOCK="/tmp/ssh-agent.sock" -w /apps ' +
+  'alpine/ansible:' + _ansible-image
+)
+
+ansible := _ansible-docker + ' ansible'
+ansible-inventory := _ansible-docker + ' ansible-inventory'
+ansible-playbook := _ansible-docker + ' ansible-playbook'
+
+ansible *ARGS:
+  {{ansible}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+
+inventory *ARGS='--list':
+  {{ansible-inventory}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+
+playbook *ARGS:
+  {{ansible-playbook}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
