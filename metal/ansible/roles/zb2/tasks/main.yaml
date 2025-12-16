@@ -1,0 +1,10 @@
+---
+
+- name: update apt packages to the latest version
+  apt:
+    update_cache: yes
+    upgrade: full
+  become: true
+  tags:
+    - zb2
+    - zb2-update

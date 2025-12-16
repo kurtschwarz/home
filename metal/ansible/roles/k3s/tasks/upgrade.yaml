@@ -1,0 +1,30 @@
+---
+
+- include_vars: "{{ k3s_node_role | lower }}.yaml"
+- include_tasks: facts.yaml
+
+- name: upgrade k3s
+  when: k3s_current_version is version(k3s_version, '<')
+  become: true
+  block:
+    - name: get k3s install script
+      ansible.builtin.get_url:
+        url: https://get.k3s.io
+        dest: /tmp/k3s-install.sh
+        mode: 0755
+    - name: run k3s install script
+      ansible.builtin.shell: |
+        INSTALL_K3S_SKIP_START=true \
+        INSTALL_K3S_VERSION={{ k3s_version }} \
+        \
+        sh /tmp/k3s-install.sh \
+          {{ k3s_node_role | lower }}
+    - name: delete k3s install script
+      ansible.builtin.file:
+        path: /tmp/k3s-install.sh
+        state: absent
+  notify:
+    - restart k3s service
+  tags:
+    - k3s
+    - k3s-upgrade

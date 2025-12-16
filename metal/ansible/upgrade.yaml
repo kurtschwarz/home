@@ -1,0 +1,19 @@
+---
+
+- name: k3s cluster upgrade
+  hosts: cluster
+  tasks:
+    - ansible.builtin.include_role:
+        apply:
+          tags:
+            - k3s-upgrade
+        name: k3s
+        tasks_from: upgrade
+      tags: always
+  serial:
+    - 1
+    - "100%"
+  become: true
+  gather_facts: true
+  tags:
+    - k3s-upgrade

@@ -1,7 +1,25 @@
 ---
 
+- name: reboot
+  ansible.builtin.reboot: {}
+
+- name: restart k3s service
+  ansible.builtin.systemd:
+    name: "{{ k3s_service_name }}"
+    state: restarted
+    daemon_reload: true
+    enabled: true
+
 - name: start k3s service
   ansible.builtin.systemd:
     name: "{{ k3s_service_name }}"
     state: started
-  become: true
+    daemon_reload: true
+    enabled: true
+
+- name: stop k3s service
+  ansible.builtin.systemd:
+    name: "{{ k3s_service_name }}"
+    state: stopped
+    daemon_reload: true
+    enabled: true

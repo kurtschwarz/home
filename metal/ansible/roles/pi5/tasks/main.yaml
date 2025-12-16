@@ -1,9 +1,5 @@
 ---
 
-- name: set hostname
-  ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}"
-
 - name: update apt packages to the latest version
   apt:
     update_cache: yes

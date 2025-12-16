@@ -1,0 +1,35 @@
+---
+
+- name: check current k3s version
+  ansible.builtin.command: k3s --version
+  register: k3s_version_output
+  changed_when: false
+  failed_when: false
+  tags:
+    - k3s
+
+- name: set installed k3s version
+  ansible.builtin.set_fact:
+    k3s_current_version: "{{ k3s_version_output.stdout_lines[0].split(' ')[2] | default('') }}"
+  tags:
+    - k3s
+
+- name: build k3s configuration
+  block:
+    - name: initialize k3s configuration map
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | default('{}') }}"
+    - name: set the token property
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | combine({ 'token': hostvars[groups['servers'][0]]['token'] }) }}"
+      when: hostvars[groups['servers'][0]]['token'] | default('')
+    - name: set the cluster-init property
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | combine({ 'cluster-init': true }) }}"
+      when: k3s_node_leader == true
+    - name: set the server property
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | combine({ 'server': k3s_server_addr }) }}"
+      when: k3s_node_leader != true
+  tags:
+    - k3s

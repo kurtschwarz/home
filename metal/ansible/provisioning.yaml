@@ -1,11 +1,13 @@
 ---
 
-- hosts: pi5
-  roles:
-    - pi5
-
 - name: k3s cluster provisioning
   hosts: cluster
-  serial: 1
   roles:
+    - k3s
+  serial:
+    - 1
+    - "100%"
+  become: true
+  gather_facts: true
+  tags:
     - k3s

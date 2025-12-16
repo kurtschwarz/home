@@ -2,13 +2,19 @@ pi5:
   hosts:
     pi5-01:
       ansible_host: 10.32.10.1
-      # pi5 vars
-      pi5_gateway_ip: 10.31.0.1
-      pi5_static_ip: 10.32.10.1
     # pi5-02:
     #   ansible_host: 10.32.10.2
     # pi5-03:
     #   ansible_host: 10.32.10.3
+
+zb2:
+  hosts:
+    zb2-01:
+      ansible_host: 10.32.20.1
+    zb2-02:
+      ansible_host: 10.32.20.2
+  vars:
+    ansible_user: kurt
 
 cluster:
   children:
@@ -28,21 +34,30 @@ cluster:
       vars:
         k3s_cluster_cidr: 10.33.0.0/16
         k3s_service_cidr: 10.34.0.0/16
-        k3s_node_args:
-          - --bind-address 0.0.0.0
-          - --cluster-cidr {{ k3s_cluster_cidr }}
-          - --service-cidr {{ k3s_service_cidr }}
-          - --advertise-address 10.32.10.1
-          - --disable traefik
-          - --disable metrics-server
-          - --disable servicelb
-          - --flannel-backend none
-          - --disable-network-policy
-          - --disable-kube-proxy
+        k3s_node_config:
+          node-name: "{{ inventory_hostname }}"
+          bind-address: 0.0.0.0
+          cluster-cidr: "{{ k3s_cluster_cidr }}"
+          service-cidr: "{{ k3s_service_cidr }}"
+          advertise-address: "10.32.10.1"
+          disable:
+            - traefik
+            - metrics-server
+            - servicelb
+          flannel-backend: none
+          disable-network-policy: true
+          disable-kube-proxy: true
     agents:
-      hosts: {}
-        # 10.32.20.1: {}
-        # 10.32.20.2: {}
+      hosts:
+        zb2-01:
+          # k3 server vars
+          k3s_node_name: zb2-01
+          k3s_node_role: agent
+        zb2-02:
+          # k3 server vars
+          k3s_node_name: zb2-01
+          k3s_node_role: agent
   vars:
     ansible_user: kurt
-    k3s_version: v1.34.1+k3s1
+    k3s_version: v1.34.2+k3s1
+    k3s_server_addr: https://10.32.10.1:6443

@@ -4,8 +4,10 @@ _ansible-image := '2.18.6@sha256:edba669e24f558c5c0e22c73d3a2c71dd77781176d84c0a
 _ansible-docker := (
   docker + ' run -it --rm ' +
   '-v ' + `pwd` + ':/apps ' +
+  '-v ' + `pwd` + '/ansible/ansible.cfg:/etc/ansible/ansible.cfg ' +
   '-v ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock:/tmp/ssh-agent.sock ' +
-  '-e SSH_AUTH_SOCK="/tmp/ssh-agent.sock" -w /apps ' +
+  '-e SSH_AUTH_SOCK="/tmp/ssh-agent.sock" ' +
+  '-w /apps ' +
   'alpine/ansible:' + _ansible-image
 )
 
