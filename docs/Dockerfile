@@ -2,7 +2,7 @@
 
 # --- global arguments ----------------------------------------------------------------------------
 
-ARG NODE_BUILD_VERSION="node:25.2.1-trixie@sha256:7942b337b20b67cd846828242f4e033cc29a83dde0f179b373636f3cbf072ae5"
+ARG NODE_BUILD_VERSION="25.2.1-trixie@sha256:7942b337b20b67cd846828242f4e033cc29a83dde0f179b373636f3cbf072ae5"
 
 # --- base layer ----------------------------------------------------------------------------------
 
@@ -13,18 +13,15 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
-      "jq=1.6*" && \
+      "jq=1.*" && \
     \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    \
-    npm install -g corepack@latest \
-    \
-    corepack enable
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace
 COPY ./package.json /workspace
-RUN pnpm install --global turbo@$(jq -r .devDependencies.turbo package.json)
+RUN npm install --global $(jq -r .packageManager package.json) && \
+    pnpm install --global turbo@$(jq -r .devDependencies.turbo package.json)
 
 # -------------------------------------------------------------------------------------------------
 
@@ -50,6 +47,6 @@ COPY --from=dependencies /workspace /workspace
 COPY --from=turbo-prune /workspace/out/full /workspace
 COPY ./docs /workspace/docs/
 
-WORKDIR /workspace/docs/docusaurus/
+WORKDIR /workspace/docs/
 ENTRYPOINT [ "pnpm" ]
-CMD [ "start", "--host", "0.0.0.0" ]
+CMD [ "run", "dev" ]

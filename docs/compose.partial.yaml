@@ -1,0 +1,12 @@
+services:
+  docs:
+    build:
+      target: dev
+      context: ../
+      dockerfile: ./docs/Dockerfile
+    volumes:
+      - ./app/:/workspace/docs/app/
+      - ./content/:/workspace/docs/content/
+    ports:
+      - 127.0.0.1:3000:3000/tcp
+    restart: always

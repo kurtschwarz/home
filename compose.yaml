@@ -1,2 +1,2 @@
 include:
-  - path: ./docs/docusaurus/compose.partial.yaml
+  - path: ./docs/compose.partial.yaml

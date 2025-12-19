@@ -1,5 +1,31 @@
 ---
-id: networking
 title: Networking
-sidebar_position: 1
 ---
+
+# Networking
+
+## Layout
+
+| CIDR            | CIDR IP Range                      | Useable IPs | Description                   |
+| :-------------- | :--------------------------------- | ----------: | :---------------------------- |
+| `10.30.1.0/24`  | `10.30.1.0` &rarr; `10.32.1.255`   | 256         | UniFi WireGuard VPN Clients   |
+| `10.32.0.0/14`  | `10.32.0.0` &rarr; `10.35.255.255` | 262,144     | UniFi Network VLAN            |
+| `10.32.10.0/24` | `10.32.10.0` &rarr; `10.32.10.255` | 256         | Kubernetes Server Nodes       |
+| `10.32.20.0/24` | `10.32.20.0` &rarr; `10.32.10.255` | 256         | Kubernetes Agent Nodes        |
+| `10.33.0.0/16`  | `10.33.0.0` &rarr; `10.33.255.255` | 65,536      | Kubernetes Pods               |
+| `10.34.0.0/16`  | `10.34.0.0` &rarr; `10.34.255.255` | 65,536      | Kubernetes Services           |
+| `10.35.0.0/16`  | `10.35.0.0` &rarr; `10.35.255.255` | 65,536      | Kubernetes External Addresses |
+
+## Static Addresses
+
+| IP                | Hostname | Description                          |
+| :---------------- | :------- | :----------------------------------- |
+| `10.30.1.1`       | n/a      | UniFi WireGuard Gateway              |
+| `10.30.1.255`     | n/a      | UniFi WireGuard Network Broadcast    |
+| `10.32.0.1`       | n/a      | UniFi VLAN Gateway                   |
+| `10.35.255.255`   | n/a      | UniFi VLAN Broadcast                 |
+| `10.32.10.1`      | `rp5-01` | RaspberryPi 5 Kubernetes Server Node |
+| `10.32.20.1`      | `zb2-01` | ZimaBoard 2 Kubernetes Agent Node    |
+| `10.32.20.2`      | `zb2-02` | ZimaBoard 2 Kubernetes Agent Node    |
+| `10.32.20.3`      | `n18-01` | Topton N18 Kubernetes Agent Node     |
+| `167.160.190.221` | `rn6-01` | RackNerd 6 GB KVM                    |

@@ -8,4 +8,4 @@ docker := `which docker`
 compose := docker + ' compose'
 
 docs *ARGS:
-  {{ compose }} up docusaurus {{ARGS}}
+  {{ compose }} up docs {{ARGS}}
