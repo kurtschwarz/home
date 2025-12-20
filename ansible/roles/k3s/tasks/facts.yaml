@@ -19,6 +19,12 @@
     - name: initialize k3s configuration map
       ansible.builtin.set_fact:
         k3s_node_config: "{{ k3s_node_config | default('{}') }}"
+    - name: set the node-name property
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | combine({ 'node-name': inventory_hostname }) }}"
+    - name: set the node-ip property
+      ansible.builtin.set_fact:
+        k3s_node_config: "{{ k3s_node_config | combine({ 'node-ip': ansible_host }) }}"
     - name: set the token property
       ansible.builtin.set_fact:
         k3s_node_config: "{{ k3s_node_config | combine({ 'token': hostvars[groups['servers'][0]]['token'] }) }}"
