@@ -10,7 +10,7 @@
 
 - name: set installed k3s version
   ansible.builtin.set_fact:
-    k3s_current_version: "{{ k3s_version_output.stdout_lines[0].split(' ')[2] | default('') }}"
+    k3s_current_version: "{{ (k3s_version_output.stdout_lines | first | default('')).split(' ')[2] | default('') }}"
   tags:
     - k3s
 
