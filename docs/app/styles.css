@@ -127,3 +127,22 @@
   visibility: hidden !important;
   height: 0 !important;
 }
+
+.cursor {
+  width: 3px;
+  height: 1rem;
+  display: block;
+  background: var(--color-primary);
+  margin-left: 6px;
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 100% {
+    opacity: 0%;
+  }
+
+  50% {
+    opacity: 100%;
+  }
+}
