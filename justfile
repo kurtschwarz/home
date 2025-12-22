@@ -4,8 +4,11 @@ mod pulumi './pulumi/justfile'
 set shell := ["/usr/bin/env", "bash", "-sec"]
 set dotenv-load := true
 
-docker := `which docker`
+docker  := `which docker`
 compose := docker + ' compose'
 
 docs *ARGS:
   {{ compose }} up docs {{ARGS}}
+
+build TARGET *ARGS:
+  {{ compose }} build {{TARGET}} {{ARGS}}

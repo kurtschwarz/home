@@ -1,0 +1,9 @@
+---
+
+# interface
+wireguard_private_key: ""
+
+# peer settings
+wireguard_peer_public_key: ""
+wireguard_peer_preshared_key: ""
+wireguard_peer_endpoint: ""

@@ -1,25 +1,15 @@
-docker := `which docker`
+docker  := `which docker`
+compose := docker + ' compose -p homelab --progress plain -f ../compose.yaml'
+ansible := compose + ' run ansible '
 
-_ansible-image := '2.18.6@sha256:edba669e24f558c5c0e22c73d3a2c71dd77781176d84c0a247f44ebd66f6f643'
-_ansible-docker := (
-  docker + ' run -it --rm ' +
-  '-v ' + `pwd` + ':/apps ' +
-  '-v ' + `pwd` + '/ansible.cfg:/etc/ansible/ansible.cfg ' +
-  '-v ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock:/tmp/ssh-agent.sock ' +
-  '-e SSH_AUTH_SOCK="/tmp/ssh-agent.sock" ' +
-  '-w /apps ' +
-  'alpine/ansible:' + _ansible-image
-)
-
-ansible := _ansible-docker + ' ansible'
-ansible-inventory := _ansible-docker + ' ansible-inventory'
-ansible-playbook := _ansible-docker + ' ansible-playbook'
-
-run *ARGS:
-  {{ansible}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+shell:
+  {{ansible}} /bin/sh
 
 inventory *ARGS='--list':
-  {{ansible-inventory}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+  {{ansible}} ansible-inventory {{ARGS}}
 
 playbook *ARGS:
-  {{ansible-playbook}} -i ./inventories/cluster/inventory.yaml {{ARGS}}
+  {{ansible}} ansible-playbook {{ARGS}}
+
+vault *ARGS:
+  {{ansible}} ansible-vault {{ARGS}}

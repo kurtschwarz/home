@@ -1,5 +1,14 @@
 ---
 
+- name: wireguard client provisioning
+  hosts: external
+  roles:
+    - wireguard
+  become: true
+  gather_facts: true
+  tags:
+    - wireguard
+
 - name: k3s cluster provisioning
   hosts: cluster
   roles:

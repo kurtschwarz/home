@@ -1,3 +1,12 @@
+# rnk -- RackNerd KVM Hosts
+rnk:
+  hosts:
+    rnk-01:
+      ansible_host: 10.30.1.2
+  vars:
+    ansible_user: root
+
+# pi5 -- RaspberryPi 5 Hosts
 pi5:
   hosts:
     pi5-01:
@@ -7,6 +16,7 @@ pi5:
     # pi5-03:
     #   ansible_host: 10.32.10.3
 
+# zb2 -- ZimaBoard 2 Hosts
 zb2:
   hosts:
     zb2-01:
@@ -35,7 +45,6 @@ cluster:
         k3s_cluster_cidr: 10.33.0.0/16
         k3s_service_cidr: 10.34.0.0/16
         k3s_node_config:
-          node-name: "{{ inventory_hostname }}"
           bind-address: 0.0.0.0
           cluster-cidr: "{{ k3s_cluster_cidr }}"
           service-cidr: "{{ k3s_service_cidr }}"
@@ -49,6 +58,10 @@ cluster:
           disable-kube-proxy: true
     agents:
       hosts:
+        rnk-01:
+          # k3 server vars
+          k3s_node_name: rnk-01
+          k3s_node_role: agent
         zb2-01:
           # k3 server vars
           k3s_node_name: zb2-01

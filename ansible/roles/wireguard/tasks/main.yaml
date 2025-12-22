@@ -1,0 +1,32 @@
+---
+- name: gather facts
+  ansible.builtin.setup:
+
+- name: install wireguard packages
+  ansible.builtin.apt:
+    name:
+      - resolvconf
+      - wireguard
+    state: present
+
+- name: enable wireguard kernel module
+  community.general.modprobe:
+    name: wireguard
+    state: present
+  retries: 10
+  delay: 10
+
+- name: create wireguard configuration directory
+  ansible.builtin.file:
+    dest: /etc/wireguard
+    state: directory
+    mode: "0700"
+
+- name: generate wireguard configuration file
+  ansible.builtin.template:
+    src: "etc/wireguard/wg.conf.j2"
+    dest: "/etc/wireguard/wg0.conf"
+    owner: "root"
+    group: "root"
+    mode: "0600"
+    backup: false
