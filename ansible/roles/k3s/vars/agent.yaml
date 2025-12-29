@@ -1,3 +1,4 @@
 ---
 
 k3s_service_name: k3s-agent
+k3s_uninstall_script: /usr/local/bin/k3s-agent-uninstall.sh

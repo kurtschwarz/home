@@ -1,0 +1,13 @@
+---
+
+- include_vars: "{{ k3s_node_role | lower }}.yaml"
+- include_tasks: facts.yaml
+
+- name: teardown k3s
+  become: true
+  block:
+    - name: run k3s teardown script
+      ignore_errors: true
+      ansible.builtin.shell: {{ k3s_uninstall_script }}
+  tags:
+    - k3s-teardown
