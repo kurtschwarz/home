@@ -1,0 +1,8 @@
+{
+  "name": "@kurtschwarz/homelab-pulumi-projects",
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@kurtschwarz/homelab-service-cilium": "workspace:^0.0.0"
+  }
+}

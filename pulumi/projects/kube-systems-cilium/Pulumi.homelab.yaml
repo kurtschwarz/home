@@ -1,0 +1,17 @@
+encryptionsalt: v1:DNJqEUhaUA0=:v1:3rtFRlPt+2tDhH0n:Um9NWSVkpGjmKBY1wG9na7z+IDHtqA==
+config:
+  # ref: https://artifacthub.io/packages/helm/cilium/cilium
+  cilium:chartVersion: 1.18.5
+  # ref: https://artifacthub.io/packages/helm/cilium/cilium#values
+  cilium:chartValues:
+    ipv4:
+      enabled: true
+    ipv6:
+      enabled: false
+    operator:
+      replicas: 1
+    ipam:
+      operator:
+        clusterPoolIPv4PodCIDRList: 10.34.0.0/16
+    k8sServiceHost: 10.32.10.1
+    k8sServicePort: 6443

@@ -1,0 +1,27 @@
+
+docker  := `which docker`
+compose := docker + ' compose -p homelab --progress plain -f ../compose.yaml'
+pulumi  := compose + ' run pulumi '
+
+# alias a bunch of pulumi commands until just supports a wildcard target
+# ref: https://github.com/casey/just/issues/1646
+@login *ARGS: (cli 'login' ARGS)
+@logout *ARGS: (cli 'logout' ARGS)
+@whoami *ARGS: (cli 'whoami' ARGS)
+@version *ARGS: (cli 'version' ARGS)
+
+@new TARGET *ARGS: (cli 'new --dir ' + TARGET + ' ' + ARGS)
+@stack TARGET *ARGS: (cli 'stack --cwd ' + TARGET + ' ' + ARGS)
+@preview TARGET *ARGS: (cli 'preview --cwd ' + TARGET + ' ' + ARGS)
+@up TARGET *ARGS: (cli 'up --cwd ' + TARGET + ' ' + ARGS)
+
+shell:
+  {{pulumi}} /bin/bash
+
+cli *ARGS:
+  {{pulumi}} {{ARGS}}
+
+build *ARGS:
+  {{compose}} build pulumi {{ARGS}}
+
+rebuild: (build '--no-cache')

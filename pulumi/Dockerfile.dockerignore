@@ -1,0 +1,15 @@
+.git/
+docs/
+metal/
+README.md
+
+**/.gitignore
+**/*.dockerignore
+**/.nvmrc
+**/.env
+**/.filen-cli-auth-config
+**/.DS_Store
+**/node_modules/
+**/compose*.yaml
+**/justfile
+**/Dockerfile
