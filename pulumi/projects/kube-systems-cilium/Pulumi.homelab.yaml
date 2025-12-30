@@ -15,3 +15,4 @@ config:
         clusterPoolIPv4PodCIDRList: 10.34.0.0/16
     k8sServiceHost: 10.32.10.1
     k8sServicePort: 6443
+    kubeProxyReplacement: true
