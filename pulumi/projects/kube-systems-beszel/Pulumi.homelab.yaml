@@ -1,0 +1,12 @@
+encryptionsalt: v1:i+lenDDs7Is=:v1:z9hY2GKGrrUzijEc:VGdlZvxDauOGalo4cfuL+t7D+9BI4A==
+config:
+  beszel:hub:
+    image: docker.io/henrygd/beszel:0.17.0@sha256:185142e6c91bd44c77fef6cd31784aee0f782eb1d7193c3ee34a9902a936621c
+    port: 8090
+  beszel:agent:
+    image: docker.io/henrygd/beszel-agent:0.17.0-alpine@sha256:5fbedf4ba772d9bd52e2988fe4e25c8a942831b4d3060fcf8613114643e98da4
+    port: 45876
+    token:
+      secure: v1:ZeRexfa+LRty75g9:ODksp/qm/jpesFgGBMa8cWO46xhM2JGw5cyhPL3xkYynoKX96DNkEsKOp1TEBXITtwHA3w==
+    key:
+      secure: v1:jmtFDPhbV5zGihVs:Ar+QnU6Tle3t6ezI8JnXa8ZeCcU9jVduIStOgN3qZEd445NHioIp+acaTrdc/fopEPGQlq6MZybiQIUiZRg/UkiMSlJxjSEbXcpKTy7Q1yaccId5W9k4vUM+PIYbUlye
