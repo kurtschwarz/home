@@ -10,10 +10,10 @@ pulumi  := compose + ' run pulumi '
 @whoami *ARGS: (cli 'whoami' ARGS)
 @version *ARGS: (cli 'version' ARGS)
 
-@new TARGET *ARGS: (cli 'new --dir ' + TARGET + ' ' + ARGS)
-@stack TARGET *ARGS: (cli 'stack --cwd ' + TARGET + ' ' + ARGS)
-@preview TARGET *ARGS: (cli 'preview --cwd ' + TARGET + ' ' + ARGS)
-@up TARGET *ARGS: (cli 'up --cwd ' + TARGET + ' ' + ARGS)
+@new TARGET *ARGS: (cli 'pulumi new --dir ' + TARGET + ' ' + ARGS)
+@stack TARGET *ARGS: (cli 'pulumi stack --cwd ' + TARGET + ' ' + ARGS)
+@preview TARGET *ARGS: (cli 'pulumi preview --cwd ' + TARGET + ' ' + ARGS)
+@up TARGET *ARGS: (cli 'pulumi up --cwd ' + TARGET + ' ' + ARGS)
 
 shell:
   {{pulumi}} /bin/bash
