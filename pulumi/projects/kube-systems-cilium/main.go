@@ -1,8 +1,10 @@
 package main
 
 import (
-	kube "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
+	kubernetes "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
+	apiextensions "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
 	helm "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/helm/v4"
+	meta "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
@@ -31,7 +33,7 @@ func buildChartValuesMap(m map[string]interface{}) pulumi.Map {
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) (err error) {
-		provider, err := kube.NewProvider(ctx, "homelab", &kube.ProviderArgs{
+		provider, err := kubernetes.NewProvider(ctx, "homelab", &kubernetes.ProviderArgs{
 			Kubeconfig: pulumi.String("/home/pulumi/.kube/config"),
 			Context:    pulumi.String("homelab"),
 		})
@@ -45,7 +47,7 @@ func main() {
 		chartValues := map[string]interface{}{}
 		conf.RequireObject("chartValues", &chartValues)
 
-		helm.NewChart(
+		chart, err := helm.NewChart(
 			ctx,
 			"cilium",
 			&helm.ChartArgs{
@@ -59,6 +61,170 @@ func main() {
 			},
 			pulumi.Provider(provider),
 		)
+
+		if err != nil {
+			return err
+		}
+
+		// LB-IPAM: hand LoadBalancer services an address out of the external
+		// CIDR. Without a pool, `type: LoadBalancer` services stay pending.
+		// Advertised to the network over BGP (see below).
+		if _, err = apiextensions.NewCustomResource(
+			ctx,
+			"loadbalancer-ip-pool",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("cilium.io/v2alpha1"),
+				Kind:       pulumi.String("CiliumLoadBalancerIPPool"),
+				Metadata: &meta.ObjectMetaArgs{
+					Name: pulumi.String("homelab"),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": pulumi.Map{
+						"blocks": pulumi.Array{
+							pulumi.Map{
+								"cidr": pulumi.String(conf.Require("loadBalancerCIDR")),
+							},
+						},
+					},
+				},
+			},
+			pulumi.Provider(provider),
+			pulumi.DependsOn([]pulumi.Resource{chart}),
+		); err != nil {
+			return err
+		}
+
+		// BGP: peer the on-prem nodes with the UDM-SE and advertise the
+		// LoadBalancer service IPs to it, so the router installs real /32
+		// routes instead of relying on L2/ARP within the VLAN.
+		peerConfig, err := apiextensions.NewCustomResource(
+			ctx,
+			"bgp-peer-config",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("cilium.io/v2"),
+				Kind:       pulumi.String("CiliumBGPPeerConfig"),
+				Metadata: &meta.ObjectMetaArgs{
+					Name: pulumi.String("udm-se"),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": pulumi.Map{
+						"families": pulumi.Array{
+							pulumi.Map{
+								"afi":  pulumi.String("ipv4"),
+								"safi": pulumi.String("unicast"),
+								"advertisements": pulumi.Map{
+									"matchLabels": pulumi.Map{
+										"advertise": pulumi.String("bgp"),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Provider(provider),
+			pulumi.DependsOn([]pulumi.Resource{chart}),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		advertisement, err := apiextensions.NewCustomResource(
+			ctx,
+			"bgp-advertisement",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("cilium.io/v2"),
+				Kind:       pulumi.String("CiliumBGPAdvertisement"),
+				Metadata: &meta.ObjectMetaArgs{
+					Name: pulumi.String("services"),
+					Labels: pulumi.StringMap{
+						"advertise": pulumi.String("bgp"),
+					},
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": pulumi.Map{
+						"advertisements": pulumi.Array{
+							pulumi.Map{
+								"advertisementType": pulumi.String("Service"),
+								"service": pulumi.Map{
+									"addresses": pulumi.Array{
+										pulumi.String("LoadBalancerIP"),
+									},
+								},
+								// select every service (NotIn a value nothing uses)
+								"selector": pulumi.Map{
+									"matchExpressions": pulumi.Array{
+										pulumi.Map{
+											"key":      pulumi.String("advertise-bgp"),
+											"operator": pulumi.String("NotIn"),
+											"values": pulumi.Array{
+												pulumi.String("never"),
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Provider(provider),
+			pulumi.DependsOn([]pulumi.Resource{chart}),
+		)
+
+		if err != nil {
+			return err
+		}
+
+		if _, err = apiextensions.NewCustomResource(
+			ctx,
+			"bgp-cluster-config",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("cilium.io/v2"),
+				Kind:       pulumi.String("CiliumBGPClusterConfig"),
+				Metadata: &meta.ObjectMetaArgs{
+					Name: pulumi.String("homelab"),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": pulumi.Map{
+						// on-prem nodes only; rnk-01 reaches the cluster over
+						// WireGuard and does not peer with the UDM.
+						"nodeSelector": pulumi.Map{
+							"matchExpressions": pulumi.Array{
+								pulumi.Map{
+									"key":      pulumi.String("kubernetes.io/hostname"),
+									"operator": pulumi.String("NotIn"),
+									"values": pulumi.Array{
+										pulumi.String("rnk-01"),
+									},
+								},
+							},
+						},
+						"bgpInstances": pulumi.Array{
+							pulumi.Map{
+								"name":     pulumi.String("homelab"),
+								"localASN": pulumi.Int(conf.RequireInt("bgpLocalASN")),
+								"peers": pulumi.Array{
+									pulumi.Map{
+										"name":        pulumi.String("udm-se"),
+										"peerASN":     pulumi.Int(conf.RequireInt("bgpPeerASN")),
+										"peerAddress": pulumi.String(conf.Require("bgpPeerAddress")),
+										"peerConfigRef": pulumi.Map{
+											"name": pulumi.String("udm-se"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Provider(provider),
+			pulumi.DependsOn([]pulumi.Resource{peerConfig, advertisement}),
+		); err != nil {
+			return err
+		}
 
 		return nil
 	})
