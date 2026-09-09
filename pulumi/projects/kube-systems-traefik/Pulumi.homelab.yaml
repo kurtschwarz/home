@@ -1,0 +1,67 @@
+config:
+  # ref: https://artifacthub.io/packages/helm/traefik/traefik-crds
+  traefik:crdsChartVersion: 1.18.0
+  # ref: https://artifacthub.io/packages/helm/traefik/traefik
+  traefik:chartVersion: 41.5.0
+  # ref: https://artifacthub.io/packages/helm/traefik/traefik#values
+  traefik:chartValues:
+    # keep ingress available during rolling updates and node maintenance
+    deployment:
+      replicas: 2
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
+    service:
+      type: LoadBalancer
+      annotations:
+        # pin the address handed out by cilium LB-IPAM so DNS stays stable
+        io.cilium/lb-ipam-ips: 10.35.0.1
+    # route traffic through the Gateway API; ingress and traefik CRD
+    # providers are unused
+    ingressClass:
+      enabled: false
+    providers:
+      kubernetesIngress:
+        enabled: false
+      kubernetesCRD:
+        enabled: false
+      kubernetesGateway:
+        enabled: true
+    # mitigate GHSA-g55h-rg46-x9c5: no unsafe fallback to default TLS options
+    core:
+      strictTLSOptions: true
+    # don't phone home to check for new versions
+    global:
+      checkNewVersion: false
+    ports:
+      web:
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
+    gateway:
+      enabled: true
+      annotations:
+        # cert-manager provisions the websecure listener certificate via
+        # DNS-01 (Cloudflare)
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+      listeners:
+        web:
+          port: 8000
+          protocol: HTTP
+          # allow HTTPRoutes from any namespace to attach
+          namespacePolicy:
+            from: All
+        websecure:
+          port: 8443
+          protocol: HTTPS
+          hostname: "*.kurtainerd.io"
+          namespacePolicy:
+            from: All
+          certificateRefs:
+            - name: traefik-gateway-tls
+    gatewayClass:
+      enabled: true
+encryptionsalt: v1:9o1j8TiVNbs=:v1:1Y10j8S40OjB9X34:59afItTN4QeBWrlmCsYxmsv2yLrUsA==
