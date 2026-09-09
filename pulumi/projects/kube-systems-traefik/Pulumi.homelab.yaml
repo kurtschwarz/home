@@ -57,7 +57,7 @@ config:
         websecure:
           port: 8443
           protocol: HTTPS
-          hostname: "*.kurtainerd.io"
+          hostname: "*.local.kurtainerd.io"
           namespacePolicy:
             from: All
           certificateRefs:

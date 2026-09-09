@@ -6,6 +6,13 @@ config:
   certManager:chartValues:
     crds:
       enabled: true
+    # watch Gateway resources annotated with
+    # `cert-manager.io/cluster-issuer` and provision their listener certs
+    # (e.g. traefik-gateway's websecure listener)
+    config:
+      apiVersion: controller.config.cert-manager.io/v1alpha1
+      kind: ControllerConfiguration
+      enableGatewayAPI: true
   certManager:letsEncryptEmail: kurt@schw.ar
   certManager:cloudflareApiToken:
     secure: v1:fiAlPxUKrVRe5V0o:CnEyMWCKhCm9gby/1l5uyUf+gYMxX3zuMTc+i/iVRKhVyzBAIYy/kBZO5qX+MytwfI46DXw20J4aFUyqrg2p6UNMGHkh

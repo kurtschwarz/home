@@ -2,6 +2,8 @@ package main
 
 import (
 	kube "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apiextensions"
+	"github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes"
 	apps "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/apps/v1"
 	core "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/core/v1"
 	meta "github.com/pulumi/pulumi-kubernetes/sdk/v4/go/kubernetes/meta/v1"
@@ -111,6 +113,58 @@ func provisionHub(
 	}
 
 	return deployment, service, nil
+}
+
+// provisionRoute exposes the hub UI through the traefik Gateway as
+// https://beszel.local.kurtainerd.io (HTTP requests are redirected to HTTPS
+// by the traefik web entrypoint).
+func provisionRoute(
+	ctx *pulumi.Context,
+	namespace *core.Namespace,
+	service *core.Service,
+	provider *kube.Provider,
+) (route *apiextensions.CustomResource, err error) {
+	var hubConfig HubConfig
+	if err = config.New(ctx, "beszel").GetObject("hub", &hubConfig); err != nil {
+		return nil, err
+	}
+
+	return apiextensions.NewCustomResource(
+		ctx,
+		"beszel-hub",
+		&apiextensions.CustomResourceArgs{
+			ApiVersion: pulumi.String("gateway.networking.k8s.io/v1"),
+			Kind:       pulumi.String("HTTPRoute"),
+			Metadata: &meta.ObjectMetaArgs{
+				Name:      pulumi.String("beszel-hub"),
+				Namespace: namespace.Metadata.Name(),
+			},
+			OtherFields: kubernetes.UntypedArgs{
+				"spec": pulumi.Map{
+					"parentRefs": pulumi.Array{
+						pulumi.Map{
+							"name":      pulumi.String("traefik-gateway"),
+							"namespace": pulumi.String("traefik"),
+						},
+					},
+					"hostnames": pulumi.Array{
+						pulumi.String("beszel.local.kurtainerd.io"),
+					},
+					"rules": pulumi.Array{
+						pulumi.Map{
+							"backendRefs": pulumi.Array{
+								pulumi.Map{
+									"name": service.Metadata.Name(),
+									"port": pulumi.Int(hubConfig.Port),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		pulumi.Provider(provider),
+	)
 }
 
 type AgentConfig struct {
@@ -232,7 +286,12 @@ func main() {
 			return err
 		}
 
-		if _, _, err = provisionHub(ctx, namespace, provider); err != nil {
+		var hubService *core.Service
+		if _, hubService, err = provisionHub(ctx, namespace, provider); err != nil {
+			return err
+		}
+
+		if _, err = provisionRoute(ctx, namespace, hubService, provider); err != nil {
 			return err
 		}
 
