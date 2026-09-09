@@ -1,0 +1,11 @@
+encryptionsalt: v1:3QxFS8LC6g0=:v1:XBa4+NffvhwGLHGw:s90iz4jaSnTQV+i10i5oTDCwaSfbvQ==
+config:
+  # ref: https://artifacthub.io/packages/helm/cert-manager/cert-manager
+  certManager:chartVersion: 1.19.2
+  # ref: https://artifacthub.io/packages/helm/cert-manager/cert-manager#values
+  certManager:chartValues:
+    crds:
+      enabled: true
+  certManager:letsEncryptEmail: kurt@schw.ar
+  certManager:cloudflareApiToken:
+    secure: v1:fiAlPxUKrVRe5V0o:CnEyMWCKhCm9gby/1l5uyUf+gYMxX3zuMTc+i/iVRKhVyzBAIYy/kBZO5qX+MytwfI46DXw20J4aFUyqrg2p6UNMGHkh
