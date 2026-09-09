@@ -1,7 +1,7 @@
 encryptionsalt: v1:DNJqEUhaUA0=:v1:3rtFRlPt+2tDhH0n:Um9NWSVkpGjmKBY1wG9na7z+IDHtqA==
 config:
   # ref: https://artifacthub.io/packages/helm/cilium/cilium
-  cilium:chartVersion: 1.19.7
+  cilium:chartVersion: 1.20.1
   # CIDR that LB-IPAM allocates LoadBalancer service addresses from. Advertised
   # to the UDM-SE as /32 host routes via BGP, so the .0.0 network address routes
   # fine and does not need excluding.
@@ -13,6 +13,9 @@ config:
   cilium:bgpPeerAddress: 10.32.0.1
   # ref: https://artifacthub.io/packages/helm/cilium/cilium#values
   cilium:chartValues:
+    # version initially installed in this cluster; minimizes datapath
+    # disruption during upgrades
+    upgradeCompatibility: "1.18"
     ipv4:
       enabled: true
     ipv6:
@@ -21,11 +24,18 @@ config:
       replicas: 1
     ipam:
       operator:
-        clusterPoolIPv4PodCIDRList: 10.34.0.0/16
+        # must match k3s cluster-cidr (pods), not the service CIDR
+        clusterPoolIPv4PodCIDRList: 10.33.0.0/16
     bgpControlPlane:
       enabled: true
     k8sServiceHost: 10.32.10.1
     k8sServicePort: 6443
-    kubeProxyReplacement: true
+    kubeProxyReplacement: "true"
     externalIPs:
       enabled: true
+    hubble:
+      enabled: true
+      relay:
+        enabled: true
+      ui:
+        enabled: true
