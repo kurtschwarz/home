@@ -1,7 +1,7 @@
 encryptionsalt: v1:DNJqEUhaUA0=:v1:3rtFRlPt+2tDhH0n:Um9NWSVkpGjmKBY1wG9na7z+IDHtqA==
 config:
   # ref: https://artifacthub.io/packages/helm/cilium/cilium
-  cilium:chartVersion: 1.18.5
+  cilium:chartVersion: 1.19.7
   # CIDR that LB-IPAM allocates LoadBalancer service addresses from. Advertised
   # to the UDM-SE as /32 host routes via BGP, so the .0.0 network address routes
   # fine and does not need excluding.
