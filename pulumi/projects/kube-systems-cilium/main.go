@@ -226,6 +226,48 @@ func main() {
 			return err
 		}
 
+		// expose the hubble UI through the traefik Gateway as
+		// https://hubble.local.kurtainerd.io
+		if _, err = apiextensions.NewCustomResource(
+			ctx,
+			"hubble-ui",
+			&apiextensions.CustomResourceArgs{
+				ApiVersion: pulumi.String("gateway.networking.k8s.io/v1"),
+				Kind:       pulumi.String("HTTPRoute"),
+				Metadata: &meta.ObjectMetaArgs{
+					Name:      pulumi.String("hubble-ui"),
+					Namespace: pulumi.String("kube-system"),
+				},
+				OtherFields: kubernetes.UntypedArgs{
+					"spec": pulumi.Map{
+						"parentRefs": pulumi.Array{
+							pulumi.Map{
+								"name":      pulumi.String("traefik-gateway"),
+								"namespace": pulumi.String("traefik"),
+							},
+						},
+						"hostnames": pulumi.Array{
+							pulumi.String("hubble.local.kurtainerd.io"),
+						},
+						"rules": pulumi.Array{
+							pulumi.Map{
+								"backendRefs": pulumi.Array{
+									pulumi.Map{
+										"name": pulumi.String("hubble-ui"),
+										"port": pulumi.Int(80),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			pulumi.Provider(provider),
+			pulumi.DependsOn([]pulumi.Resource{chart}),
+		); err != nil {
+			return err
+		}
+
 		return nil
 	})
 }
