@@ -1,0 +1,5 @@
+config:
+  bark:server:
+    image: docker.io/finab/bark-server:v2.3.5@sha256:32d65b07fa835c99b31a396b77727a04ed058377fc2482da3e9dc7397167ffc4
+    port: 8080
+encryptionsalt: v1:dSQKaSGTkgk=:v1:GXniVJN871OWHXTY:SIjYv9f58CRRszPhEl9m5UkJg066/Q==
