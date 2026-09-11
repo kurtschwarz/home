@@ -1,0 +1,7 @@
+config:
+  # ref: https://github.com/scryer-media/weaver/pkgs/container/weaver
+  weaver:image: ghcr.io/scryer-media/weaver:0.11.5@sha256:830b56709dcf5fbdbc8c095ae96342b797d901c49ca077aeec3fc01d507299f9
+  weaver:bootstrapUsername: admin
+  weaver:bootstrapPassword:
+    secure: v1:IYnqgK68C9p7GZE5:NrWQJ1+xWaOEcbL8PSrMo3h1h/WVUZjcqpthArwb+eYcpfHel8KZig==
+encryptionsalt: v1:bivnzJhMPhE=:v1:3iNkrhzyMW3hf7c7:rjIiOCcV08LPyT/h1aPsd+LhCAraDQ==
