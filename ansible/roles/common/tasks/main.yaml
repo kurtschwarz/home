@@ -1,0 +1,12 @@
+---
+
+- name: install smartmontools for disk health monitoring
+  ansible.builtin.apt:
+    name:
+      - smartmontools
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - common
+    - common-packages

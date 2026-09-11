@@ -1,5 +1,14 @@
 ---
 
+- name: common host provisioning
+  hosts: all
+  roles:
+    - common
+  become: true
+  gather_facts: true
+  tags:
+    - common
+
 - name: wireguard client provisioning
   hosts: external
   roles:
