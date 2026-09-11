@@ -62,6 +62,16 @@ config:
             from: All
           certificateRefs:
             - name: traefik-gateway-tls
+        # serves publicly-routed hostnames such as bark.kurtainerd.io; SNI
+        # picks the certificate based on the listener hostname
+        websecure-public:
+          port: 8443
+          protocol: HTTPS
+          hostname: "*.kurtainerd.io"
+          namespacePolicy:
+            from: All
+          certificateRefs:
+            - name: traefik-gateway-public-tls
     gatewayClass:
       enabled: true
 encryptionsalt: v1:9o1j8TiVNbs=:v1:1Y10j8S40OjB9X34:59afItTN4QeBWrlmCsYxmsv2yLrUsA==
