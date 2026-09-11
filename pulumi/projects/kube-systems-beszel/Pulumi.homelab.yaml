@@ -7,6 +7,6 @@ config:
     image: docker.io/henrygd/beszel-agent:0.19.0-alpine@sha256:00c88600e7d120128f623b2deb5257603d464e841fd68f88cc791dcc075f9e46
     port: 45876
     token:
-      secure: v1:Uu1Tszv3cpbqe+9e:950l5L/jEbxWuBA5UBKWwKnR7JtpkIhBvn9iPvFO9B1YGttbtdWleq4kpzskoswORU4Ogg==
+      secure: v1:Sbcgy/J6HKMg/Zc/:0ZFtDXLw454MNAwFXjhcIRlY4SbZZVF+dcBgGIulr0bgRc9LP+J94ZWNKFW3kYZH1gT2ug==
     key:
-      secure: v1:jOMFoIZTCwcIQe6O:eFcvr4dW3XrFj1LwwlNdh7Alf5wLa+BQbjiI5fqPirYE4zlminQvbkg1TOjRNLCcdvLco4aqqAOxrsFoue7qguidN57Od/8ANxESnx5qlfp6OumqUqk6rVLfxXkfefXz
+      secure: v1:mu97FxLnEsdV6aee:tv/x5M7sZR3cDSpUN/pJMhipxLjAC++hV02L+oBgvzIRkO0221frruOPbnJULEdu2HAp4AnpvvUm+DrFJ+u3WUiGJh/CqWuKjTO/OBgsMNPa+GN18l030QzPXZQhVURD

@@ -42,6 +42,31 @@ func provisionHub(
 		return nil, nil, err
 	}
 
+	var volumeClaim *core.PersistentVolumeClaim
+	if volumeClaim, err = core.NewPersistentVolumeClaim(
+		ctx,
+		"beszel-hub",
+		&core.PersistentVolumeClaimArgs{
+			Metadata: &meta.ObjectMetaArgs{
+				Name:      pulumi.String("beszel-hub"),
+				Namespace: namespace.Metadata.Name(),
+			},
+			Spec: &core.PersistentVolumeClaimSpecArgs{
+				AccessModes: &pulumi.StringArray{
+					pulumi.String("ReadWriteOnce"),
+				},
+				Resources: &core.VolumeResourceRequirementsArgs{
+					Requests: &pulumi.StringMap{
+						"storage": pulumi.String("128Mi"),
+					},
+				},
+			},
+		},
+		pulumi.Provider(provider),
+	); err != nil {
+		return nil, nil, err
+	}
+
 	if deployment, err = apps.NewDeployment(
 		ctx,
 		"beszel-hub",
@@ -51,6 +76,13 @@ func provisionHub(
 				Namespace: namespace.Metadata.Name(),
 			},
 			Spec: &apps.DeploymentSpecArgs{
+				Strategy: &apps.DeploymentStrategyArgs{
+					Type: pulumi.String("RollingUpdate"),
+					RollingUpdate: &apps.RollingUpdateDeploymentArgs{
+						MaxSurge:       pulumi.Int(0),
+						MaxUnavailable: pulumi.Int(1),
+					},
+				},
 				Selector: &meta.LabelSelectorArgs{
 					MatchLabels: &pulumi.StringMap{
 						"app": pulumi.String("beszel-hub"),
@@ -74,7 +106,21 @@ func provisionHub(
 										HostPort:      pulumi.Int(hubConfig.Port),
 									},
 								},
+								VolumeMounts: &core.VolumeMountArray{
+									&core.VolumeMountArgs{
+										Name:      pulumi.String("data"),
+										MountPath: pulumi.String("/beszel_data"),
+									},
+								},
 								RestartPolicy: pulumi.String("Always"),
+							},
+						},
+						Volumes: &core.VolumeArray{
+							core.VolumeArgs{
+								Name: pulumi.String("data"),
+								PersistentVolumeClaim: &core.PersistentVolumeClaimVolumeSourceArgs{
+									ClaimName: volumeClaim.Metadata.Name().Elem(),
+								},
 							},
 						},
 					},
@@ -195,13 +241,13 @@ func provisionAgents(
 			Spec: &apps.DaemonSetSpecArgs{
 				Selector: &meta.LabelSelectorArgs{
 					MatchLabels: &pulumi.StringMap{
-						"app": pulumi.String("beszel-agent"),
+						"app.kubernetes.io/name": pulumi.String("beszel-agent"),
 					},
 				},
 				Template: &core.PodTemplateSpecArgs{
 					Metadata: &meta.ObjectMetaArgs{
 						Labels: &pulumi.StringMap{
-							"app": pulumi.String("beszel-agent"),
+							"app.kubernetes.io/name": pulumi.String("beszel-agent"),
 						},
 					},
 					Spec: &core.PodSpecArgs{
