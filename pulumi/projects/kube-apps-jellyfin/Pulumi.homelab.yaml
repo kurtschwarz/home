@@ -1,0 +1,42 @@
+config:
+  # ref: https://artifacthub.io/packages/helm/jellyfin/jellyfin
+  jellyfin:chartVersion: 3.2.0
+  # ref: https://github.com/jellyfin/jellyfin-helm/blob/master/charts/jellyfin/values.yaml
+  jellyfin:chartValues:
+    image:
+      tag: 12.0.20260908-012347@sha256:baba630419915985442f315f08b0cf46d9f4c8a0cc4bd38e94a6d35751dd5ef5
+    # pin to nas-01: its intel n150 iGPU (/dev/dri) does hardware transcoding
+    nodeSelector:
+      kubernetes.io/hostname: nas-01
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        size: 10Gi
+      cache:
+        enabled: true
+        type: pvc
+        size: 10Gi
+      media:
+        enabled: true
+        type: hostPath
+        # mergerfs pool on nas-01 (see ansible/roles/nas); the pod is pinned
+        # to nas-01 via nodeSelector so the host path is always valid
+        hostPath: /mnt/storage/media
+    # expose the intel iGPU render nodes for QSV/VAAPI transcoding
+    volumes:
+      - name: dev-dri
+        hostPath:
+          path: /dev/dri
+          type: Directory
+    volumeMounts:
+      - name: dev-dri
+        mountPath: /dev/dri
+    httpRoute:
+      enabled: true
+      parentRefs:
+        - name: traefik-gateway
+          namespace: traefik
+      hostnames:
+        - jellyfin.local.kurtainerd.io
+encryptionsalt: v1:rkXfMwZJUtU=:v1:GBx44rwg/6Kt6I0l:MBIOdd+e03z0Zpy19niFWPv3NtcHRg==
