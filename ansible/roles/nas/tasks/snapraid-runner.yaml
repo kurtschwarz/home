@@ -1,0 +1,56 @@
+---
+
+- name: ensure snapraid-runner directory exists
+  ansible.builtin.file:
+    path: "{{ nas_snapraid_runner_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: fetch snapraid-runner script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/Chronial/snapraid-runner/master/snapraid-runner.py
+    dest: "{{ nas_snapraid_runner_dir }}/snapraid-runner.py"
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: render snapraid-runner configuration
+  ansible.builtin.template:
+    src: opt/snapraid-runner/snapraid-runner.conf.j2
+    dest: "{{ nas_snapraid_runner_dir }}/snapraid-runner.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: install snapraid-sync systemd service
+  ansible.builtin.template:
+    src: etc/systemd/system/snapraid-sync.service.j2
+    dest: /etc/systemd/system/snapraid-sync.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: reload systemd
+
+- name: install snapraid-sync systemd timer
+  ansible.builtin.template:
+    src: etc/systemd/system/snapraid-sync.timer.j2
+    dest: /etc/systemd/system/snapraid-sync.timer
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: reload systemd
+
+- name: enable and start snapraid-sync timer
+  ansible.builtin.systemd:
+    name: snapraid-sync.timer
+    state: started
+    enabled: true
+    daemon_reload: true
+  become: true

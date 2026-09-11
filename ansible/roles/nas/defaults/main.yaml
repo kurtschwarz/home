@@ -1,0 +1,28 @@
+---
+
+# mergerfs pool
+nas_pool_mountpoint: /mnt/storage
+nas_mergerfs_options: "cache.files=partial,dropcacheonclose=true,category.create=mfs,minfreespace=50G,fsname=mergerfs"
+
+# data and parity disks are defined per-host in the inventory.
+# disks are expected to be pre-formatted ext4 with the matching LABEL.
+nas_data_disks: []
+nas_parity_disks: []
+
+# snapraid
+nas_snapraid_conf_path: /etc/snapraid.conf
+nas_snapraid_excludes:
+  - "*.unrecoverable"
+  - "/tmp/"
+  - "/lost+found/"
+  - ".Trash-*"
+  - "*.!sync"
+  - "*.tmp"
+
+# snapraid-runner (nightly sync + scrub)
+nas_snapraid_runner_dir: /opt/snapraid-runner
+nas_snapraid_runner_log: /var/log/snapraid-runner.log
+nas_snapraid_sync_oncalendar: "*-*-* 03:00:00"
+nas_snapraid_scrub_enabled: true
+nas_snapraid_scrub_percent: 8
+nas_snapraid_scrub_older_than: 10

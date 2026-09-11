@@ -32,6 +32,14 @@ nas:
     nas-01:
       ansible_user: root
       ansible_host: 10.32.20.3
+      # data disks pooled by mergerfs and protected by snapraid
+      nas_data_disks:
+        - { label: disk1, mount: /mnt/disk1 }
+        - { label: disk2, mount: /mnt/disk2 }
+        - { label: disk3, mount: /mnt/disk3 }
+      # parity disks (must be >= the largest data disk)
+      nas_parity_disks:
+        - { label: parity1, mount: /mnt/parity1 }
 
 cluster:
   children:

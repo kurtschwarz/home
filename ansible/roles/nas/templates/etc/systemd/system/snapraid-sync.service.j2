@@ -1,0 +1,12 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=SnapRAID sync and scrub
+After=local-fs.target
+RequiresMountsFor={{ nas_pool_mountpoint }}
+
+[Service]
+Type=oneshot
+Nice=19
+IOSchedulingClass=idle
+ExecStart=/usr/bin/python3 {{ nas_snapraid_runner_dir }}/snapraid-runner.py -c {{ nas_snapraid_runner_dir }}/snapraid-runner.conf

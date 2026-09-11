@@ -1,0 +1,122 @@
+---
+
+- name: install mergerfs, snapraid and fuse packages
+  ansible.builtin.apt:
+    name:
+      - mergerfs
+      - snapraid
+      - fuse3
+    state: present
+    update_cache: true
+  become: true
+  tags:
+    - nas
+    - nas-packages
+
+- name: ensure data disk mountpoints exist
+  ansible.builtin.file:
+    path: "{{ item.mount }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ nas_data_disks }}"
+  loop_control:
+    label: "{{ item.mount }}"
+  become: true
+  tags:
+    - nas
+    - nas-mounts
+
+- name: ensure parity disk mountpoints exist
+  ansible.builtin.file:
+    path: "{{ item.mount }}"
+    state: directory
+    mode: "0755"
+  loop: "{{ nas_parity_disks }}"
+  loop_control:
+    label: "{{ item.mount }}"
+  become: true
+  tags:
+    - nas
+    - nas-mounts
+
+- name: mount data disks by label
+  ansible.posix.mount:
+    path: "{{ item.mount }}"
+    src: "LABEL={{ item.label }}"
+    fstype: ext4
+    opts: defaults,noatime
+    state: mounted
+  loop: "{{ nas_data_disks }}"
+  loop_control:
+    label: "{{ item.label }}"
+  become: true
+  tags:
+    - nas
+    - nas-mounts
+
+- name: mount parity disks by label
+  ansible.posix.mount:
+    path: "{{ item.mount }}"
+    src: "LABEL={{ item.label }}"
+    fstype: ext4
+    opts: defaults,noatime
+    state: mounted
+  loop: "{{ nas_parity_disks }}"
+  loop_control:
+    label: "{{ item.label }}"
+  become: true
+  tags:
+    - nas
+    - nas-mounts
+
+- name: ensure mergerfs pool mountpoint exists
+  ansible.builtin.file:
+    path: "{{ nas_pool_mountpoint }}"
+    state: directory
+    mode: "0755"
+  become: true
+  tags:
+    - nas
+    - nas-mergerfs
+
+- name: mount mergerfs pool
+  ansible.posix.mount:
+    path: "{{ nas_pool_mountpoint }}"
+    src: "{{ nas_data_disks | map(attribute='mount') | join(':') }}"
+    fstype: fuse.mergerfs
+    opts: "{{ nas_mergerfs_options }}"
+    state: mounted
+  become: true
+  tags:
+    - nas
+    - nas-mergerfs
+
+- name: ensure snapraid content directory exists
+  ansible.builtin.file:
+    path: /var/snapraid
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags:
+    - nas
+    - nas-snapraid
+
+- name: render snapraid configuration
+  ansible.builtin.template:
+    src: etc/snapraid.conf.j2
+    dest: "{{ nas_snapraid_conf_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  tags:
+    - nas
+    - nas-snapraid
+
+- name: install snapraid-runner
+  ansible.builtin.include_tasks: snapraid-runner.yaml
+  tags:
+    - nas
+    - nas-snapraid

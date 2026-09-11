@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+
+[snapraid]
+executable = /usr/bin/snapraid
+config = {{ nas_snapraid_conf_path }}
+deletethreshold = 0
+touch = false
+
+[logging]
+file = {{ nas_snapraid_runner_log }}
+maxsize = 5000
+
+[email]
+sendon =
+smtphost =
+port =
+subject =
+from =
+to =
+
+[scrub]
+enabled = {{ nas_snapraid_scrub_enabled | ternary('true', 'false') }}
+plan = {{ nas_snapraid_scrub_percent }}
+older-than = {{ nas_snapraid_scrub_older_than }}

@@ -20,3 +20,12 @@
   gather_facts: true
   tags:
     - k3s
+
+- name: nas storage provisioning
+  hosts: nas
+  roles:
+    - nas
+  become: true
+  gather_facts: true
+  tags:
+    - nas

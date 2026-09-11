@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Nightly SnapRAID sync and scrub
+
+[Timer]
+OnCalendar={{ nas_snapraid_sync_oncalendar }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

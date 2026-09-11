@@ -1,0 +1,26 @@
+# {{ ansible_managed }}
+
+# parity files
+{% for disk in nas_parity_disks %}
+{% if loop.first %}
+parity {{ disk.mount }}/snapraid.parity
+{% else %}
+{{ loop.index0 | string }}-parity {{ disk.mount }}/snapraid.parity
+{% endif %}
+{% endfor %}
+
+# content files -- one per data disk plus a copy outside the array
+content /var/snapraid/snapraid.content
+{% for disk in nas_data_disks %}
+content {{ disk.mount }}/snapraid.content
+{% endfor %}
+
+# data disks
+{% for disk in nas_data_disks %}
+data {{ disk.label }} {{ disk.mount }}
+{% endfor %}
+
+# exclusions
+{% for pattern in nas_snapraid_excludes %}
+exclude {{ pattern }}
+{% endfor %}
