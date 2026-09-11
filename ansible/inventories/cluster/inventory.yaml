@@ -26,6 +26,13 @@ zb2:
   vars:
     ansible_user: kurt
 
+# nas -- NAS Hosts
+nas:
+  hosts:
+    nas-01:
+      ansible_user: root
+      ansible_host: 10.32.20.3
+
 cluster:
   children:
     servers:
@@ -69,6 +76,10 @@ cluster:
         zb2-02:
           # k3 server vars
           k3s_node_name: zb2-01
+          k3s_node_role: agent
+        nas-01:
+          # k3 server vars
+          k3s_node_name: nas-01
           k3s_node_role: agent
   vars:
     ansible_user: kurt
