@@ -1,0 +1,3 @@
+# {{ ansible_managed }}
+# re-exports the mergerfs pool; fsid is required for fuse filesystems
+{{ nas_pool_mountpoint }} {% for client in nas_nfs_export_clients %}{{ client }}({{ nas_nfs_export_options }}){% if not loop.last %} {% endif %}{% endfor %}

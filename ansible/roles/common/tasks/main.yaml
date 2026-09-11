@@ -1,9 +1,10 @@
 ---
 
-- name: install smartmontools for disk health monitoring
+- name: install common host packages
   ansible.builtin.apt:
     name:
-      - smartmontools
+      - smartmontools # disk health monitoring (beszel)
+      - nfs-common # mount.nfs for kubelet in-tree nfs volumes
     state: present
     update_cache: true
   become: true

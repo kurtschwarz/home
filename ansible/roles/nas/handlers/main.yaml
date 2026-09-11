@@ -4,3 +4,8 @@
   ansible.builtin.systemd:
     daemon_reload: true
   become: true
+
+- name: re-export nfs shares
+  ansible.builtin.command: exportfs -ra
+  become: true
+  changed_when: true

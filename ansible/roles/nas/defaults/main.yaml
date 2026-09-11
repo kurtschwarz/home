@@ -26,3 +26,13 @@ nas_snapraid_sync_oncalendar: "*-*-* 03:00:00"
 nas_snapraid_scrub_enabled: true
 nas_snapraid_scrub_percent: 8
 nas_snapraid_scrub_older_than: 10
+
+# nfs export of the mergerfs pool
+# clients: anyone on the private 10.0.0.0/8 network
+nas_nfs_export_clients:
+  - 10.0.0.0/8
+# any fsid works for re-exporting a fuse filesystem, but keep it non-zero:
+# fsid=0 would make the export the nfsv4 pseudoroot, forcing v4 clients to
+# mount "server:/" instead of the real path; no_root_squash lets cluster
+# pods (root) write; insecure allows clients on high ports (e.g. macOS)
+nas_nfs_export_options: "rw,sync,fsid=100,no_subtree_check,no_root_squash,insecure"

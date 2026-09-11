@@ -6,6 +6,7 @@
       - mergerfs
       - snapraid
       - fuse3
+      - nfs-kernel-server
     state: present
     update_cache: true
   become: true
@@ -120,3 +121,38 @@
   tags:
     - nas
     - nas-snapraid
+
+- name: ensure nfs exports directory exists
+  ansible.builtin.file:
+    path: /etc/exports.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags:
+    - nas
+    - nas-nfs
+
+- name: render nfs export for the mergerfs pool
+  ansible.builtin.template:
+    src: etc/exports.d/mergerfs.exports.j2
+    dest: /etc/exports.d/mergerfs.exports
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: re-export nfs shares
+  tags:
+    - nas
+    - nas-nfs
+
+- name: ensure nfs server is running
+  ansible.builtin.systemd:
+    name: nfs-server
+    state: started
+    enabled: true
+  become: true
+  tags:
+    - nas
+    - nas-nfs
