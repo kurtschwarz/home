@@ -1,0 +1,4 @@
+config:
+  # ref: https://github.com/linuxserver/docker-sabnzbd
+  sabnzbd:image: lscr.io/linuxserver/sabnzbd:4.5.1
+encryptionsalt: v1:J4Lc0Z3e+R8=:v1:+1LS7NleiJrGHMsK:/8hSWTLKy/OdKFpDApI7lPnA26pJwQ==
