@@ -34,5 +34,7 @@ nas_nfs_export_clients:
 # any fsid works for re-exporting a fuse filesystem, but keep it non-zero:
 # fsid=0 would make the export the nfsv4 pseudoroot, forcing v4 clients to
 # mount "server:/" instead of the real path; no_root_squash lets cluster
-# pods (root) write; insecure allows clients on high ports (e.g. macOS)
-nas_nfs_export_options: "rw,sync,fsid=100,no_subtree_check,no_root_squash,insecure"
+# pods (root) write; insecure allows clients on high ports (e.g. macOS);
+# all_squash+anonuid/anongid=0 maps other clients (e.g. macOS uid 502) to
+# root so they can write to the root-owned pool
+nas_nfs_export_options: "rw,sync,fsid=100,no_subtree_check,no_root_squash,insecure,all_squash,anonuid=0,anongid=0"
