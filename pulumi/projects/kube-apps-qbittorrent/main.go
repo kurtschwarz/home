@@ -205,6 +205,19 @@ func provisionQbittorrent(
 						},
 					},
 					Spec: &core.PodSpecArgs{
+						// the pod resolves only public names (trackers, DHT
+						// bootstrap); with the default ndots=5 every lookup
+						// walks the whole cluster search-domain chain through
+						// gluetun's DNS proxy first, multiplying query volume
+						// 5x and delaying gluetun's own healthcheck lookups
+						DnsConfig: &core.PodDNSConfigArgs{
+							Options: &core.PodDNSConfigOptionArray{
+								&core.PodDNSConfigOptionArgs{
+									Name:  pulumi.String("ndots"),
+									Value: pulumi.String("1"),
+								},
+							},
+						},
 						// pin to nas-01 so the local volume path is valid
 						NodeSelector: &pulumi.StringMap{
 							"kubernetes.io/hostname": pulumi.String(nodeName),
@@ -227,7 +240,69 @@ func provisionQbittorrent(
 										},
 									},
 								},
+								// the pod network namespace is shared and
+								// survives container restarts, but gluetun's
+								// wireguard ip rules (table 51820) do not get
+								// cleaned up on an abrupt exit. On the next
+								// start gluetun fails to re-add them
+								// ("adding ip rule 101 ...: file exists") and
+								// the tunnel never comes back. Delete any stale
+								// rules on start so a restart can re-establish
+								// the VPN cleanly (paired with the Recreate
+								// strategy above).
+								// ref: https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/kubernetes.md
+								Lifecycle: &core.LifecycleArgs{
+									PostStart: &core.LifecycleHandlerArgs{
+										Exec: &core.ExecActionArgs{
+											Command: pulumi.StringArray{
+												pulumi.String("/bin/sh"),
+												pulumi.String("-c"),
+												pulumi.String("(ip rule del table 51820; ip -6 rule del table 51820) || true"),
+											},
+										},
+									},
+								},
+								// gluetun can silently stall (e.g. a wedged
+								// wireguard handshake) without its process
+								// exiting; its built-in healthcheck reports
+								// tunnel health, so let the kubelet restart the
+								// container on failure. The probe must run
+								// *inside* the pod netns: gluetun's health
+								// server binds the container's 127.0.0.1:9999,
+								// unreachable by an httpGet probe (the kubelet
+								// dials from the node netns). Reuse gluetun's
+								// own healthcheck subcommand, which queries the
+								// health server locally. Tolerate 5 minutes of
+								// failures so transient re-handshakes don't
+								// trigger a hard kill.
+								LivenessProbe: &core.ProbeArgs{
+									Exec: &core.ExecActionArgs{
+										Command: pulumi.StringArray{
+											pulumi.String("/gluetun-entrypoint"),
+											pulumi.String("healthcheck"),
+										},
+									},
+									InitialDelaySeconds: pulumi.Int(90),
+									TimeoutSeconds:      pulumi.Int(10),
+									PeriodSeconds:       pulumi.Int(30),
+									FailureThreshold:    pulumi.Int(10),
+								},
+								// reserve CPU for the tunnel control plane:
+								// under heavy torrent load gluetun starves
+								// (DNS proxy, healthcheck, NAT-PMP renewal),
+								// misses its own healthchecks and churns the
+								// VPN connection
+								Resources: &core.ResourceRequirementsArgs{
+									Requests: &pulumi.StringMap{
+										"cpu":    pulumi.String("250m"),
+										"memory": pulumi.String("128Mi"),
+									},
+								},
 								Env: &core.EnvVarArray{
+									&core.EnvVarArgs{
+										Name:  pulumi.String("LOG_LEVEL"),
+										Value: pulumi.String("debug"),
+									},
 									&core.EnvVarArgs{
 										Name:  pulumi.String("VPN_SERVICE_PROVIDER"),
 										Value: pulumi.String("custom"),
