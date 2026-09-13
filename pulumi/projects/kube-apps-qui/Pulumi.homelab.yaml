@@ -1,0 +1,8 @@
+encryptionsalt: v1:VAptXPfUBd4=:v1:/7sdj165qArlnB8V:JfQ134F7fdpyTrFUIOgqX2l5o/wcAg==
+config:
+  # ref: https://github.com/autobrr/qui
+  qui:image: ghcr.io/autobrr/qui:v1.29.0@sha256:263c131adb007be98469959d5d3625e88476417c900519a1abad0bd609f0f103
+  # random hex (openssl rand -hex 32) injected into config.toml; never change
+  # it after credentials are stored — qui derives its encryption key from it
+  qui:sessionSecret:
+    secure: v1:Ogo6iSwfgun2M+xt:ftg+ysJZWGhd7DPCjKkujljuqyqMVrKOVLiVRm89sCRXbT53alkQ37u8r+nOVV2TzCGMyhN84Yjjt/xz4E/HqAZyZOvJr+TtM5Ne5gwnI1c=

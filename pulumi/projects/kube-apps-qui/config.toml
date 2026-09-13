@@ -1,0 +1,7 @@
+# ref: https://getqui.com/docs/configuration/reference
+# sessionSecret is injected from the encrypted Pulumi stack config
+# (qui:sessionSecret) at deploy time — see provisionConfigSecret in main.go
+host = "0.0.0.0"
+port = 7476
+databaseEngine = "sqlite"
+sessionSecret = "{{SESSION_SECRET}}"
