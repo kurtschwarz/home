@@ -8,8 +8,8 @@ config:
   # must be set as a secret:
   #   just pulumi cli pulumi config set --secret qbittorrent:wireguardPrivateKey <key> --stack homelab --cwd projects/kube-apps-qbittorrent
   qbittorrent:wireguardAddress: 10.2.0.2/32
-  qbittorrent:wireguardEndpointIp: 185.159.158.219
+  qbittorrent:wireguardEndpointIp: 149.22.82.88
   qbittorrent:wireguardEndpointPort: "51820"
-  qbittorrent:wireguardPublicKey: 28hrybwV/NiiMXvl1ynBvDvEvs1m8ABUzyvkQ7+ST3I=
+  qbittorrent:wireguardPublicKey: xLFgU430Tt7PdHJydVbIKvtjXJodoPpGKW7fhF7XE2k=
   qbittorrent:wireguardPrivateKey:
-    secure: v1:1Ul5LMhrtwQ6LlH8:I2ffLqLbBFxOXFwRFGf1AgDb1PzpvBkZhHwYtETFKf+zS2fnhiTX2KNgKNCPT5LUdqSbDaEoe1K3/IDt
+    secure: v1:X4Y+qNl6z8GlnZCm:NcuRybthfE6NadoD/B59rYMXgSxmj+mGayvtSfPJiOLymc6Ehd7ZvCF5wi/JAtYF2pNFla5Kf5yQeSVe
