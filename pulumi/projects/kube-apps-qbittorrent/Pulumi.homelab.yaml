@@ -1,0 +1,15 @@
+encryptionsalt: v1:YceYtEJ6aSQ=:v1:EbPZOZKvQrjNKtHI:mX6sUpEaMxo+hyXLr1TAHWmtqLs4Ew==
+config:
+  # ref: https://github.com/linuxserver/docker-qbittorrent
+  qbittorrent:image: lscr.io/linuxserver/qbittorrent:5.2.3@sha256:2be038f3421f60f62e8e4bf201f66f385b68e4fbc9ed3ab79051069ea22e2650
+  # ref: https://github.com/qdm12/gluetun
+  qbittorrent:gluetunImage: qmcgaw/gluetun:v3.41.3@sha256:fa19cc76b2af13d57a8d3dc3066f2ada061b1c761b8aecf989b3877c0486e027
+  # ProtonVPN secure-core (IS-CA#1) WireGuard configuration; the private key
+  # must be set as a secret:
+  #   just pulumi cli pulumi config set --secret qbittorrent:wireguardPrivateKey <key> --stack homelab --cwd projects/kube-apps-qbittorrent
+  qbittorrent:wireguardAddress: 10.2.0.2/32
+  qbittorrent:wireguardEndpointIp: 185.159.158.219
+  qbittorrent:wireguardEndpointPort: "51820"
+  qbittorrent:wireguardPublicKey: 28hrybwV/NiiMXvl1ynBvDvEvs1m8ABUzyvkQ7+ST3I=
+  qbittorrent:wireguardPrivateKey:
+    secure: v1:1Ul5LMhrtwQ6LlH8:I2ffLqLbBFxOXFwRFGf1AgDb1PzpvBkZhHwYtETFKf+zS2fnhiTX2KNgKNCPT5LUdqSbDaEoe1K3/IDt
