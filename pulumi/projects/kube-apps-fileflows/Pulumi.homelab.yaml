@@ -1,0 +1,4 @@
+config:
+  # ref: https://fileflows.com/docs/installation/docker
+  fileflows:image: revenz/fileflows:26.09@sha256:5d7460ec63be60bb33fd50336b064c138e7d005a8fd3d19d47ff259de7df8b82
+encryptionsalt: v1:uFueOT5EHvU=:v1:lRbOhZcFHmfUC2/h:1HnKoy4+vY4zRK0VxEl7qz1u/4AHmw==
