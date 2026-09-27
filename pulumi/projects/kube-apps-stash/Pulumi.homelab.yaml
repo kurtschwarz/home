@@ -1,0 +1,4 @@
+config:
+  # ref: https://github.com/stashapp/stash
+  stash:image: stashapp/stash:v0.31.1@sha256:df744af5a0c976e2ec671052ecc1f8a9aa757fa12b8f9930b59910b7295f0da6
+encryptionsalt: v1:3OGYUzp9+Go=:v1:jHXBRT21tp1ASGkD:QuRLx/ZdpufjkcD8Klth7Tpt+YEOqQ==

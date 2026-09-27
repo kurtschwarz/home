@@ -1,0 +1,4 @@
+config:
+  # ref: https://github.com/arabcoders/ytptube
+  ytptube:image: ghcr.io/arabcoders/ytptube:v2.7.3@sha256:abf84856a07957456f89519b97c8c2247b9dbded641103ca230f6e66c1d80235
+encryptionsalt: v1:qgUdI2FedDI=:v1:3aU+dZJ7gN49rdPE:jPC6EFPMAlELFnmSVOvRoKxKdbx9Ow==
